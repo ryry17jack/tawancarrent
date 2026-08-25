@@ -1,0 +1,82 @@
+---
+import Base from '../layouts/Base.astro';
+import Media from '../components/Media.astro';
+import { cars, featuredCarIds } from '../data/site';
+import { pathFor, t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+
+const priceOf = (id: string) => cars.find((c) => c.id === id)!.price;
+---
+
+<Base lang={lang} route="home" title={d.meta.home.title} description={d.meta.home.description}>
+  <section class="hero hero--home">
+    <div class="kicker">{d.home.kicker}</div>
+    <h1 class="display-xl">{d.home.headingLines[0]}<br />{d.home.headingLines[1]}</h1>
+    <p class="hero__lede">{d.home.lede}</p>
+    <div class="btnrow">
+      <a class="cta" href={pathFor('contact', lang)}>{d.home.ctaLine}</a>
+      <a class="cta cta--ghost" href={pathFor('cars', lang)}>{d.home.ctaCars}</a>
+    </div>
+  </section>
+
+  <Media class="media--bleed grayscale" big note={d.home.heroPhotoNote} />
+
+  <div class="stats">
+    {
+      d.home.stats.map((s) => (
+        <div>
+          <div class="stat__n">{s.n}</div>
+          <div class="stat__l">{s.label}</div>
+        </div>
+      ))
+    }
+  </div>
+
+  <section class="section">
+    <div class="sectionhead">
+      <h2>{d.home.carsHeading}</h2>
+      <a class="arrowlink" href={pathFor('cars', lang)}>{d.common.seeAll}</a>
+    </div>
+
+    <div class="inkgrid inkgrid--2">
+      {
+        featuredCarIds.map((id) => (
+          <article class="carrow">
+            <Media class="grayscale" alt={d.cars.names[id]} />
+            <div>
+              <div class="price-xl">{priceOf(id).toLocaleString('en-US')}</div>
+              <div class="price-unit">{d.common.perDay}</div>
+              <h3 class="car-name">{d.cars.names[id]}</h3>
+              <div class="car-spec">{d.cars.featuredSpecs[id]}</div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section section--tight section--ruled">
+    <div class="split split--40">
+      <div>
+        <h2 class="h4-like">{d.home.areasHeading}</h2>
+        <div class="bigareas">
+          {d.home.areasLines[0]}<br />{d.home.areasLines[1]}
+        </div>
+      </div>
+      <div>
+        <h2 class="h4-like">{d.home.reviewHeading}</h2>
+        <p class="homequote">{d.home.reviewQuote}</p>
+        <span class="byline">{d.home.reviewBy}</span>
+        <div class="mt-14">
+          <a class="arrowlink" href={pathFor('reviews', lang)}>{d.home.readAllReviews}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

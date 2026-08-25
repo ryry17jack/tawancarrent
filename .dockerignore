@@ -1,0 +1,15 @@
+node_modules
+dist
+.astro
+.wrangler
+.git
+.gitattributes
+.github
+.env
+.env.*
+*.log
+README.md
+LICENSE
+compose.yaml
+Dockerfile
+.dockerignore

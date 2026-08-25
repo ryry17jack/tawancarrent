@@ -1,0 +1,177 @@
+---
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { business, placeDetails, serviceAreaIds } from '../data/site';
+import { pathFor, switchLocalePath, t, type Locale } from '../i18n';
+import type { RouteKey } from '../data/site';
+
+// Self-hosted so there is no render-blocking request to fonts.googleapis.com
+// and no third-party connection on the critical path. `wght.css` carries every
+// subset behind unicode-range, so a page fetches only the scripts it uses.
+import '@fontsource-variable/archivo/wght.css';
+import '@fontsource-variable/anuphan/wght.css';
+import '../styles/ds-modernist.css';
+import '../styles/site.css';
+
+interface Props {
+  lang: Locale;
+  /** Which nav item is current; omitted for the 404 page. */
+  route?: RouteKey;
+  title: string;
+  description: string;
+  image?: string;
+  /** Trail *after* the home page. */
+  breadcrumbs?: { label: string; href: string }[];
+  noindex?: boolean;
+}
+
+const {
+  lang,
+  route,
+  title,
+  description,
+  image = '/og.jpg',
+  breadcrumbs = [],
+  noindex = false,
+} = Astro.props;
+
+const d = t(lang);
+const origin = (Astro.site ?? new URL('https://tawancarrent.com')).origin;
+const canonical = new URL(Astro.url.pathname, origin).href;
+const imageUrl = new URL(image, origin).href;
+
+// Both locales of *this* page, for hreflang. x-default points at Thai: it is
+// the default locale and the market the shop actually serves.
+const thHref = new URL(switchLocalePath(Astro.url.pathname, 'th'), origin).href;
+const enHref = new URL(switchLocalePath(Astro.url.pathname, 'en'), origin).href;
+
+const graph: Record<string, unknown>[] = [
+  {
+    '@type': 'AutoRental',
+    '@id': `${origin}/#business`,
+    name: d.legalName,
+    alternateName: [business.nameEn, business.nameTh],
+    description: d.businessDescription,
+    url: origin,
+    telephone: business.phoneE164,
+    image: `${origin}/og.jpg`,
+    address: {
+      '@type': 'PostalAddress',
+      ...(placeDetails.streetAddress ? { streetAddress: placeDetails.streetAddress } : {}),
+      addressLocality: lang === 'th' ? 'หาดใหญ่' : 'Hat Yai',
+      addressRegion: lang === 'th' ? 'สงขลา' : 'Songkhla',
+      ...(placeDetails.postalCode ? { postalCode: placeDetails.postalCode } : {}),
+      addressCountry: 'TH',
+    },
+    ...(placeDetails.latitude !== null && placeDetails.longitude !== null
+      ? {
+          geo: {
+            '@type': 'GeoCoordinates',
+            latitude: placeDetails.latitude,
+            longitude: placeDetails.longitude,
+          },
+        }
+      : {}),
+    ...(placeDetails.mapUrl ? { hasMap: placeDetails.mapUrl } : {}),
+    areaServed: serviceAreaIds.map((id) => ({ '@type': 'City', name: d.about.areas[id] })),
+    openingHoursSpecification: [
+      {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+        opens: '08:00',
+        closes: '20:00',
+      },
+    ],
+    priceRange: '฿800–฿2,500',
+    currenciesAccepted: 'THB',
+    paymentAccepted: lang === 'th' ? 'เงินสด, โอนธนาคาร' : 'Cash, Bank transfer',
+    sameAs: [business.facebookUrl, business.lineUrl],
+  },
+  {
+    '@type': 'WebSite',
+    '@id': `${origin}/#website`,
+    url: origin,
+    name: d.legalName,
+    inLanguage: d.htmlLang,
+    publisher: { '@id': `${origin}/#business` },
+  },
+  {
+    '@type': 'WebPage',
+    '@id': canonical,
+    url: canonical,
+    name: title,
+    description,
+    inLanguage: d.htmlLang,
+    isPartOf: { '@id': `${origin}/#website` },
+    about: { '@id': `${origin}/#business` },
+    primaryImageOfPage: imageUrl,
+  },
+];
+
+if (breadcrumbs.length > 0) {
+  graph.push({
+    '@type': 'BreadcrumbList',
+    '@id': `${canonical}#breadcrumb`,
+    itemListElement: [
+      { label: d.breadcrumbHome, href: pathFor('home', lang) },
+      ...breadcrumbs,
+    ].map((crumb, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: crumb.label,
+      item: new URL(crumb.href, origin).href,
+    })),
+  });
+}
+
+const jsonLd = { '@context': 'https://schema.org', '@graph': graph };
+---
+
+<!doctype html>
+<html lang={d.htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta
+      name="robots"
+      content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'}
+    />
+    <meta name="theme-color" content="#16233f" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <link rel="alternate" hreflang="th" href={thHref} />
+    <link rel="alternate" hreflang="en" href={enHref} />
+    <link rel="alternate" hreflang="x-default" href={thHref} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={d.legalName} />
+    <meta property="og:locale" content={d.ogLocale} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Tawan Car Rent Hat Yai — from ฿800 a day" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{d.skipToContent}</a>
+    <div class="shell">
+      <Header lang={lang} route={route} />
+      <main id="main">
+        <slot />
+      </main>
+      <Footer lang={lang} />
+    </div>
+  </body>
+</html>

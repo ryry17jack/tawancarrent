@@ -1,0 +1,23 @@
+---
+import { business } from '../data/site';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+---
+
+<div class="footcta">
+  <div>
+    <div class="footcta__t">LINE {business.lineId}</div>
+    <div class="footcta__s">
+      {d.common.callPrefix} {business.phone} · {d.common.openPrefix} {d.hours} · {d.common.freeAirport}
+    </div>
+  </div>
+  <a class="cta" href={business.lineUrl} rel="noopener">{d.common.bookToday}</a>
+</div>
+
+<footer class="legal">{d.footer.legalLine}</footer>

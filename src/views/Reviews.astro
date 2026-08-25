@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+import Media from '../components/Media.astro';
+import { reviewMeta } from '../data/site';
+import { pathFor, t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+
+const starString = (n: number) => '★'.repeat(n) + '☆'.repeat(5 - n);
+---
+
+<Base
+  lang={lang}
+  route="reviews"
+  title={d.meta.reviews.title}
+  description={d.meta.reviews.description}
+  breadcrumbs={[{ label: d.nav.reviews, href: pathFor('reviews', lang) }]}
+>
+  <section class="hero">
+    <div class="kicker">{d.reviews.kicker}</div>
+    <h1 class="display-m">{d.reviews.headingLines[0]}<br />{d.reviews.headingLines[1]}</h1>
+    <div class="scorerow">
+      {
+        d.reviews.scores.map((s) => (
+          <div>
+            <div class="score__n">{s.n}</div>
+            <div class="score__l">{s.label}</div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section--quote">
+    <p class="pullquote">{d.reviews.featuredQuote}</p>
+    <span class="byline">{d.reviews.featuredBy}</span>
+  </section>
+
+  <div class="inkgrid inkgrid--3">
+    {
+      reviewMeta.map((meta, i) => {
+        const r = d.reviews.items[i];
+        return (
+          <article class="review">
+            <div class="review__head">
+              <Media class="grayscale" />
+              <div>
+                <div class="review__name">{r.name}</div>
+                <div class="review__place">{r.place}</div>
+              </div>
+              <span class="stars" aria-label={d.reviews.starsLabel(meta.stars)}>
+                {starString(meta.stars)}
+              </span>
+            </div>
+            <p>{r.text}</p>
+          </article>
+        );
+      })
+    }
+  </div>
+
+  <section class="section section--tight section--ruled">
+    <h2 class="h4-like">{d.reviews.galleryHeading}</h2>
+    <div class="inkgrid inkgrid--5 gallery">
+      {Array.from({ length: 5 }).map(() => <Media class="grayscale" />)}
+    </div>
+    <p class="notecaption">{d.reviews.galleryNote}</p>
+  </section>
+</Base>

@@ -1,0 +1,26 @@
+---
+import Media from './Media.astro';
+import type { Car } from '../data/site';
+
+interface Props {
+  car: Car;
+  name: string;
+  spec: string;
+  status: string;
+  perDay: string;
+}
+
+const { car, name, spec, status, perDay } = Astro.props;
+---
+
+<article
+  class:list={['cartile', !car.available && 'cartile--booked']}
+  data-category={car.category}
+>
+  <Media src={car.photo} alt={name} />
+  <div class="availability">{car.categoryLabel} · {status}</div>
+  <div class="price-l">{car.price.toLocaleString('en-US')}</div>
+  <div class="price-unit">{perDay}</div>
+  <h3 class="car-name">{name}</h3>
+  <div class="car-spec">{spec}</div>
+</article>

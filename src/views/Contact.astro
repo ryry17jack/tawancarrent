@@ -1,0 +1,69 @@
+---
+import Base from '../layouts/Base.astro';
+import Media from '../components/Media.astro';
+import { business } from '../data/site';
+import { pathFor, t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+---
+
+<Base
+  lang={lang}
+  route="contact"
+  title={d.meta.contact.title}
+  description={d.meta.contact.description}
+  breadcrumbs={[{ label: d.nav.contact, href: pathFor('contact', lang) }]}
+>
+  <section class="hero">
+    <div class="kicker">{d.contact.kicker}</div>
+    <h1 class="display-l">{d.contact.headingLines[0]}<br />{d.contact.headingLines[1]}</h1>
+    <p class="hero__lede">{d.contact.lede}</p>
+  </section>
+
+  <div class="inkgrid inkgrid--3 ruled-bottom">
+    <a class="channel channel--line" href={business.lineUrl} rel="noopener">
+      <div class="channel__k">{d.contact.channelLine}</div>
+      <div class="channel__v">{business.lineId} →</div>
+    </a>
+    <a class="channel" href={business.phoneHref}>
+      <div class="channel__k">{d.contact.channelPhone}</div>
+      <div class="channel__v">{business.phone} →</div>
+    </a>
+    <a class="channel" href={business.facebookUrl} rel="noopener">
+      <div class="channel__k">{d.contact.channelFacebook}</div>
+      <div class="channel__v">{d.contact.facebookName}</div>
+    </a>
+  </div>
+
+  <div class="split split--wide-right">
+    <div class="section section--tight prose-col">
+      <h2 class="h4-like">{d.contact.shopHeading}</h2>
+      <dl class="deflist">
+        {
+          d.contact.shopFacts.map((f) => (
+            <div>
+              <dt>{f.k}</dt>
+              <dd set:html={f.v} />
+            </div>
+          ))
+        }
+      </dl>
+
+      <div class="qrrow">
+        <Media class="grayscale" />
+        <div class="qrrow__t">
+          {d.contact.qrText}<br />
+          <strong>{business.lineId}</strong><br />
+          <span class="notecaption">{d.contact.qrNote}</span>
+        </div>
+      </div>
+    </div>
+
+    <Media class="media--taller grayscale" big note={d.contact.mapNote} />
+  </div>
+</Base>

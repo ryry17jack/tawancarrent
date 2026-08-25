@@ -1,0 +1,27 @@
+---
+/**
+ * A photo slot. Renders the real image when `src` is set, otherwise the
+ * design's hatched placeholder with its lowercase mono caption — so the layout
+ * holds its shape until the shop's photos are dropped into `public/`.
+ */
+interface Props {
+  src?: string;
+  alt?: string;
+  note?: string;
+  /** Wider hatch, used for the full-bleed / large panels in the design. */
+  big?: boolean;
+  class?: string;
+}
+
+const { src, alt = '', note, big = false, class: className } = Astro.props;
+---
+
+<div class:list={['media', !src && (big ? 'media--hatch-lg' : 'media--hatch'), className]}>
+  {
+    src ? (
+      <img src={src} alt={alt} loading="lazy" decoding="async" />
+    ) : (
+      note && <span class="media__note">{note}</span>
+    )
+  }
+</div>

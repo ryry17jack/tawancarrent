@@ -1,0 +1,68 @@
+---
+import Base from '../layouts/Base.astro';
+import Media from '../components/Media.astro';
+import { serviceAreaIds } from '../data/site';
+import { pathFor, t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+---
+
+<Base
+  lang={lang}
+  route="about"
+  title={d.meta.about.title}
+  description={d.meta.about.description}
+  breadcrumbs={[{ label: d.nav.about, href: pathFor('about', lang) }]}
+>
+  <section class="hero">
+    <div class="kicker">{d.about.kicker}</div>
+    <h1 class="display-s mb-0">
+      {d.about.headingLines[0]}<br />{d.about.headingLines[1]}
+    </h1>
+  </section>
+
+  <div class="split split--wide-left ruled-bottom">
+    <div class="section prose-col">
+      {d.about.paragraphs.map((p) => <p class="prose">{p}</p>)}
+    </div>
+    <Media class="media--tall grayscale" big note={d.about.photoNote} />
+  </div>
+
+  <div class="numbered">
+    {
+      d.about.promises.map((text, i) => (
+        <div>
+          <div class="numbered__n">{String(i + 1).padStart(2, '0')}</div>
+          <div class="numbered__t">{text}</div>
+        </div>
+      ))
+    }
+  </div>
+
+  <section class="section">
+    <div class="split">
+      <div>
+        <h2 class="section-title">{d.about.insuranceHeading}</h2>
+        <dl class="deflist">
+          {
+            d.about.insuranceFacts.map((f) => (
+              <div>
+                <dt>{f.k}</dt>
+                <dd>{f.v}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+      <div>
+        <h2 class="section-title">{d.about.areasHeading}</h2>
+        <div class="arealist">{serviceAreaIds.map((id) => <span>{d.about.areas[id]}</span>)}</div>
+      </div>
+    </div>
+  </section>
+</Base>

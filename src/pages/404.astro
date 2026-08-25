@@ -1,0 +1,35 @@
+---
+import Base from '../layouts/Base.astro';
+import { pathFor, t } from '../i18n';
+
+// Cloudflare Pages serves this one file for every unmatched path, including
+// those under /en/, so it carries both languages rather than guessing.
+const th = t('th');
+const en = t('en');
+---
+
+<Base lang="th" title={th.meta.notFound.title} description={th.meta.notFound.description} noindex>
+  <section class="hero">
+    <div class="kicker">404</div>
+
+    <h1 class="display-l" lang="th">
+      {th.notFound.headingLines[0]}<br />{th.notFound.headingLines[1]}
+    </h1>
+    <p class="hero__lede" lang="th">{th.notFound.lede}</p>
+    <div class="btnrow mt-32">
+      <a class="cta" href={pathFor('home', 'th')}>{th.notFound.goHome}</a>
+      <a class="cta cta--ghost" href={pathFor('cars', 'th')}>{th.notFound.seeCars}</a>
+    </div>
+
+    <hr class="notfound-rule" />
+
+    <h2 class="display-s" lang="en">
+      {en.notFound.headingLines[0]}<br />{en.notFound.headingLines[1]}
+    </h2>
+    <p class="hero__lede" lang="en">{en.notFound.lede}</p>
+    <div class="btnrow mt-32">
+      <a class="cta" href={pathFor('home', 'en')}>{en.notFound.goHome}</a>
+      <a class="cta cta--ghost" href={pathFor('cars', 'en')}>{en.notFound.seeCars}</a>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,164 @@
+---
+import Base from '../layouts/Base.astro';
+import CarTile from '../components/CarTile.astro';
+import { carCategoryIds, cars, fleetSize, rates } from '../data/site';
+import { pathFor, t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+}
+
+const { lang } = Astro.props;
+const d = t(lang);
+
+const origin = (Astro.site ?? new URL('https://tawancarrent.com')).origin;
+const money = (n: number) => n.toLocaleString('en-US');
+
+// `{n}` is the published fleet size; the grid below lists current models.
+const fleetLines = d.cars.headingLines.map((line) => line.replace('{n}', String(fleetSize)));
+
+// `businessFunction: LeaseOut` is what marks these as rentals rather than
+// sales; the daily rate is expressed as a UnitPriceSpecification per DAY so the
+// price is not read as an outright purchase price.
+const fleetSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: d.meta.cars.title,
+  numberOfItems: cars.length,
+  itemListElement: cars.map((car, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: {
+      '@type': 'Vehicle',
+      name: d.cars.names[car.id],
+      description: d.cars.specs[car.id],
+      vehicleConfiguration: car.categoryLabel,
+      vehicleTransmission: 'AutomaticTransmission',
+      offers: {
+        '@type': 'Offer',
+        businessFunction: 'http://purl.org/goodrelations/v1#LeaseOut',
+        availability: car.available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        priceCurrency: 'THB',
+        price: car.price,
+        priceSpecification: {
+          '@type': 'UnitPriceSpecification',
+          priceCurrency: 'THB',
+          price: car.price,
+          unitCode: 'DAY',
+        },
+        seller: { '@id': `${origin}/#business` },
+      },
+    },
+  })),
+};
+---
+
+<Base
+  lang={lang}
+  route="cars"
+  title={d.meta.cars.title}
+  description={d.meta.cars.description}
+  breadcrumbs={[{ label: d.nav.cars, href: pathFor('cars', lang) }]}
+>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(fleetSchema)} />
+
+  <section class="hero">
+    <div class="kicker">{d.cars.kicker}</div>
+    <h1 class="display-l">
+      {fleetLines[0]}<br />{fleetLines[1]}
+    </h1>
+    <p class="hero__lede">{d.cars.lede}</p>
+  </section>
+
+  <div class="filters" data-car-filter role="group" aria-label={d.cars.filterGroupLabel}>
+    {
+      carCategoryIds.map((id, i) => (
+        <button type="button" data-filter={id} aria-pressed={i === 0 ? 'true' : 'false'}>
+          {d.cars.filters[id]}
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="inkgrid inkgrid--3" data-car-grid>
+    {
+      cars.map((car) => (
+        <CarTile
+          car={car}
+          name={d.cars.names[car.id]}
+          spec={d.cars.specs[car.id]}
+          status={d.cars.statuses[car.id]}
+          perDay={d.common.perDay}
+        />
+      ))
+    }
+  </div>
+
+  <p class="section section--tight" data-empty hidden>{d.cars.emptyState}</p>
+
+  <section class="section section--tight section--ruled">
+    <h2 class="section-title">{d.cars.ratesHeading}</h2>
+
+    <div class="rates-wrap">
+      <table class="rates">
+        <thead>
+          <tr>{d.cars.rateColumns.map((c) => <th scope="col">{c}</th>)}</tr>
+        </thead>
+        <tbody>
+          {
+            rates.map((r) => (
+              <tr>
+                <th scope="row">{d.cars.names[r.id]}</th>
+                <td>{money(r.short)}</td>
+                <td>{money(r.mid)}</td>
+                <td>{d.cars.rateOnRequest}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="minicols">
+      {
+        d.cars.notes.map((n) => (
+          <div>
+            <div class="minicols__h">{n.head}</div>
+            <div class="minicols__b" set:html={n.body} />
+          </div>
+        ))
+      }
+    </div>
+  </section>
+</Base>
+
+<script>
+  // Progressive enhancement: without JS every car stays visible.
+  const bar = document.querySelector<HTMLElement>('[data-car-filter]');
+  const grid = document.querySelector<HTMLElement>('[data-car-grid]');
+  const empty = document.querySelector<HTMLElement>('[data-empty]');
+
+  if (bar && grid) {
+    const tiles = Array.from(grid.querySelectorAll<HTMLElement>('[data-category]'));
+
+    bar.addEventListener('click', (event) => {
+      const button = (event.target as HTMLElement).closest<HTMLButtonElement>('button[data-filter]');
+      if (!button) return;
+
+      const wanted = button.dataset.filter ?? 'all';
+      for (const b of bar.querySelectorAll('button')) {
+        b.setAttribute('aria-pressed', String(b === button));
+      }
+
+      let shown = 0;
+      for (const tile of tiles) {
+        const match = wanted === 'all' || tile.dataset.category === wanted;
+        tile.hidden = !match;
+        if (match) shown++;
+      }
+
+      grid.hidden = shown === 0;
+      if (empty) empty.hidden = shown !== 0;
+    });
+  }
+</script>
