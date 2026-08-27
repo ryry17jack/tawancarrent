@@ -1,3 +1,13 @@
 name = "tawancarrent"
 compatibility_date = "2025-08-01"
-pages_build_output_dir = "dist"
+
+# Static-only Worker: no `main`, no server code — Workers Static Assets serves
+# the prerendered `dist/` straight off the edge, and applies the `_headers`
+# file Astro copies there from `public/`.
+[assets]
+directory = "./dist"
+# Astro builds `build.format: 'directory'`, so `/about/` must resolve to
+# `dist/about/index.html`; a miss serves the prerendered `dist/404.html`
+# rather than the bare Workers 404.
+html_handling = "auto-trailing-slash"
+not_found_handling = "404-page"

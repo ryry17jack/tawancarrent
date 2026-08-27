@@ -9,9 +9,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "cf:preview": "npm run build && wrangler pages dev dist",
-    "cf:deploy": "npm run build && wrangler pages deploy dist",
-    "deploy": "wrangler pages deploy dist",
+    "cf:preview": "npm run build && wrangler dev",
+    "cf:deploy": "npm run build && wrangler deploy",
+    "deploy": "wrangler deploy",
     "og": "node scripts/make-og.js"
   },
   "dependencies": {

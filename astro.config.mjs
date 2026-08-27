@@ -2,7 +2,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-// Static output — Cloudflare Pages serves `dist/` straight off its CDN.
+// Static output — Cloudflare Workers Static Assets serves `dist/` off the edge.
 // No adapter is needed while every route is prerendered; add
 // @astrojs/cloudflare only if a route later needs server rendering.
 export default defineConfig({

@@ -2,7 +2,7 @@
 
 Astro site built from the Claude Design canvas
 [Tawan Car Rent - Site (1b)](https://claude.ai/design/p/491363b1-dc11-4da0-ad8b-249a15bab301),
-deployed as static files on Cloudflare Pages.
+deployed as static files on Cloudflare Workers (Static Assets).
 
 ## Commands
 
@@ -11,9 +11,9 @@ deployed as static files on Cloudflare Pages.
 | `npm run dev`        | Dev server on http://localhost:4321                  |
 | `npm run build`      | Build the static site into `dist/`                   |
 | `npm run preview`    | Serve `dist/` locally                                |
-| `npm run cf:preview` | Build, then serve `dist/` through the Pages runtime  |
-| `npm run cf:deploy`  | Build, then `wrangler pages deploy dist`             |
-| `npm run deploy`     | `wrangler pages deploy dist` alone (CI deploy step)  |
+| `npm run cf:preview` | Build, then serve `dist/` through the Workers runtime|
+| `npm run cf:deploy`  | Build, then `wrangler deploy`                       |
+| `npm run deploy`     | `wrangler deploy` alone (the CI deploy step)         |
 | `npx astro check`    | Type-check `.astro` templates                        |
 | `npm run og`         | Regenerate `public/og.jpg`, the social card          |
 
@@ -36,7 +36,7 @@ container, `DOCKER_POLLING=1` switches Vite's watcher to polling; that env var
 is the only thing `astro.config.mjs` reads it for.
 
 **`preview`** builds the site and serves it through nginx with
-[`docker/nginx.conf`](docker/nginx.conf), which mirrors how Cloudflare Pages
+[`docker/nginx.conf`](docker/nginx.conf), which mirrors how Cloudflare
 serves `dist/`: `/cars` 301s to `/cars/`, unknown paths return the custom
 `404.html` with a 404 status, `/_astro/*` is cached immutable for a year, and the
 security headers match `public/_headers`. That file is duplicated by hand —
@@ -101,35 +101,39 @@ manual action. Ratings collected on the Google Business Profile show up in
 search on their own. Leave this alone unless the reviews move to a
 third-party platform.
 
-## Deploying to Cloudflare Pages
+## Deploying to Cloudflare Workers
 
-The site is fully prerendered, so Pages just serves `dist/` — no adapter, no
-Workers runtime, no build-time secrets.
+The site is fully prerendered, so there is no server code at all: [`wrangler.toml`](wrangler.toml)
+declares an `[assets]` directory and no `main`, and Workers Static Assets serves
+`dist/` off the edge.
 
 **Git integration (recommended).** In the Cloudflare dashboard: *Workers &
-Pages → Create → Pages → Connect to Git*, pick this repo, then set
+Pages → Create → Workers → Import a repository*, pick this repo, then set
 
-- Framework preset: **Astro**
 - Build command: `npm run build`
-- Deploy command: `npm run deploy`. The value the dashboard prefills, `npx
-  wrangler deploy`, is the *Workers* command: on a Pages project it fails with
-  “Missing entry-point to Worker script or to assets directory”. Pages needs
-  `wrangler pages deploy`, which is what `npm run deploy` wraps. Clearing the
-  field also works — Pages then uploads the build output directory itself.
-- Build output directory: `dist`
+- Deploy command: `npm run deploy`
 - Node version: `22` (set `NODE_VERSION=22` under environment variables)
 
-Every push to `main` publishes; other branches get preview URLs.
+The Worker name in the dashboard must match `name` in `wrangler.toml`, or the
+deploy step creates a *second* Worker under the config's name. Every push to
+`main` publishes; other branches get preview URLs.
+
+Do not reach for `wrangler pages deploy` here — this is a Worker, not a Pages
+project, and that command fails with *"The Pages project ... does not exist."*
+The reverse trap is louder than it looks: while `wrangler.toml` still carried
+`pages_build_output_dir`, plain `wrangler deploy` warned *"you have run
+`wrangler deploy` on a Pages project"* purely because of that one config key,
+even though no Pages project ever existed. Both messages describe the config
+file, not the account.
 
 **Direct upload.** `npm run cf:deploy` (needs `npx wrangler login` once).
-`wrangler.toml` already declares `pages_build_output_dir = "dist"`.
 
-**Custom domain.** *Pages project → Custom domains → Set up a domain →*
+**Custom domain.** *Worker → Settings → Domains & Routes → Add → Custom domain →*
 `tawancarrent.com`. Keep `site` in `astro.config.mjs` matching the live domain —
 it is what canonical URLs and `sitemap-index.xml` are built from.
 
 `public/_headers` sets the security headers and caches hashed `_astro/*` assets
-for a year; Cloudflare applies it automatically on deploy.
+for a year; Astro copies it into `dist/`, and the assets runtime applies it.
 
 ## Layout of the code
 
@@ -185,8 +189,8 @@ carries the same reciprocal alternates.
 **Adding a route.** Add the key to `routes`/`routePaths` in `site.ts`, add its
 strings to both dictionaries, create the view, then the two route files.
 
-**The 404 is bilingual.** Cloudflare Pages serves one `404.html` for every
-unmatched path including those under `/en/`, so it carries both languages rather
+**The 404 is bilingual.** `not_found_handling = "404-page"` serves one
+`404.html` for every unmatched path including those under `/en/`, so it carries both languages rather
 than guessing.
 
 ### Adding real photos
