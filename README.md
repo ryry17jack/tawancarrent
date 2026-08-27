@@ -13,6 +13,7 @@ deployed as static files on Cloudflare Pages.
 | `npm run preview`    | Serve `dist/` locally                                |
 | `npm run cf:preview` | Build, then serve `dist/` through the Pages runtime  |
 | `npm run cf:deploy`  | Build, then `wrangler pages deploy dist`             |
+| `npm run deploy`     | `wrangler pages deploy dist` alone (CI deploy step)  |
 | `npx astro check`    | Type-check `.astro` templates                        |
 | `npm run og`         | Regenerate `public/og.jpg`, the social card          |
 
@@ -110,6 +111,11 @@ Pages → Create → Pages → Connect to Git*, pick this repo, then set
 
 - Framework preset: **Astro**
 - Build command: `npm run build`
+- Deploy command: `npm run deploy`. The value the dashboard prefills, `npx
+  wrangler deploy`, is the *Workers* command: on a Pages project it fails with
+  “Missing entry-point to Worker script or to assets directory”. Pages needs
+  `wrangler pages deploy`, which is what `npm run deploy` wraps. Clearing the
+  field also works — Pages then uploads the build output directory itself.
 - Build output directory: `dist`
 - Node version: `22` (set `NODE_VERSION=22` under environment variables)
 
