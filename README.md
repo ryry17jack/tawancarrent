@@ -93,7 +93,7 @@ one is available; a photo will outperform a typographic card.
 
 ### Deliberately not marked up
 
-The review scores on `/reviews/` (4.9, 320+ reviews) are **not** wrapped in
+The review scores on `/reviews/` (4.9) are **not** wrapped in
 `aggregateRating` / `Review` schema. Google does not allow self-serving
 reviews — reviews about a business, hosted on that business's own site — to
 produce review rich results for `LocalBusiness`, and marking them up invites a

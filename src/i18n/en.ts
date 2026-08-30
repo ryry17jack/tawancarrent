@@ -28,7 +28,7 @@ export const en: Dict = {
     reviews: {
       title: 'Customer Reviews | Tawan Car Rent Hat Yai',
       description:
-        'Customer reviews of Tawan Car Rent Hat Yai — 4.9 average from more than 320 reviews. Clean cars, cold air conditioning, on-time airport pickup.',
+        'Customer reviews of Tawan Car Rent Hat Yai — Clean cars, cold air conditioning, on-time airport pickup.',
     },
     about: {
       title: 'About Us | Tawan Car Rent Hat Yai',
@@ -144,8 +144,6 @@ export const en: Dict = {
     kicker: 'CUSTOMER REVIEWS',
     headingLines: ['Thank you to', 'our customers'],
     scores: [
-      { n: '4.9', label: 'Average rating' },
-      { n: '320+', label: 'Customer reviews' },
       { n: '5+', label: 'Years in business' },
     ],
     galleryNote: 'Real handover photos from our customers, updated regularly.',
