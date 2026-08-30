@@ -9,9 +9,10 @@ import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 
-const NAVY = '#16233f';
-const ORANGE = '#c65d11';
-const AMBER = '#eda05c';
+// Matches the live brand palette in src/styles/ds-modernist.css / design.md.
+const NAVY = '#0d1b2a'; // --color-navy
+const GREEN = '#06c755'; // --color-line (LINE brand, used for the site's LINE CTAs)
+const GOLD = '#e5a50a'; // --color-primary-active
 
 // Thai-capable stacks. Leelawadee UI / Tahoma ship with Windows.
 const THAI = "'Leelawadee UI', 'Tahoma', 'Segoe UI', sans-serif";
@@ -22,7 +23,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
 
   <text x="72" y="88" font-family="${LATIN}" font-size="26" font-weight="bold"
         letter-spacing="6" fill="#ffffff">TAWAN CAR RENT</text>
-  <text x="72" y="128" font-family="${THAI}" font-size="26" fill="${AMBER}"
+  <text x="72" y="128" font-family="${THAI}" font-size="26" fill="${GOLD}"
         >รถเช่าหาดใหญ่ · สงขลา · ภาคใต้ตอนล่าง</text>
 
   <text x="72" y="290" font-family="${THAI}" font-size="132" font-weight="bold"
@@ -31,11 +32,11 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
   <text x="72" y="370" font-family="${THAI}" font-size="34" fill="#ffffff"
         opacity="0.88">ไม่ต้องใช้บัตรเครดิต · ฟรีรับส่งสนามบิน · ประกันภัยชั้น 1</text>
 
-  <rect x="0" y="470" width="1200" height="160" fill="${ORANGE}"/>
+  <rect x="0" y="470" width="1200" height="160" fill="${GREEN}"/>
   <text x="72" y="545" font-family="${LATIN}" font-size="52" font-weight="bold"
         fill="#ffffff">LINE @tawan8118</text>
   <text x="72" y="592" font-family="${THAI}" font-size="30" fill="#ffffff"
-        opacity="0.92">โทร 091-046-8118 · เปิดทุกวัน 08:00–20:00</text>
+        opacity="0.92">โทร 091-046-8118 · เปิดทุกวัน 07:00–22:00</text>
 
   <rect x="928" y="470" width="4" height="160" fill="#ffffff" opacity="0.3"/>
   <text x="1128" y="542" font-family="${LATIN}" font-size="62" font-weight="bold"
