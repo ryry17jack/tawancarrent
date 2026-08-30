@@ -55,15 +55,23 @@ const d = t(lang);
       </dl>
 
       <div class="qrrow">
-        <Media class="grayscale" />
+        <Media src="/QR_tawan8118.png" alt={d.contact.qrText} />
         <div class="qrrow__t">
           {d.contact.qrText}<br />
           <strong>{business.lineId}</strong><br />
-          <span class="notecaption">{d.contact.qrNote}</span>
+          <!-- <span class="notecaption">{d.contact.qrNote}</span> -->
         </div>
       </div>
     </div>
 
-    <Media class="media--taller grayscale" big note={d.contact.mapNote} />
+    <div class="media media--taller">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d990.0870104395024!2d100.4762311!3d6.9682043!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x304cd732b3707da3%3A0x9e18c0398e6060b4!2sTawan%20CarRent%20Hatyai!5e0!3m2!1sth!2sth!4v1788104506252!5m2!1sth!2sth"
+        title={d.contact.mapNote}
+        loading="lazy"
+        allowfullscreen
+        referrerpolicy="strict-origin-when-cross-origin"
+      />
+    </div>
   </div>
 </Base>

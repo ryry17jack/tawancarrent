@@ -78,8 +78,8 @@ const graph: Record<string, unknown>[] = [
       {
         '@type': 'OpeningHoursSpecification',
         dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-        opens: '08:00',
-        closes: '20:00',
+        opens: '07:00',
+        closes: '22:00',
       },
     ],
     priceRange: '฿800–฿2,500',
@@ -139,7 +139,7 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': graph };
       name="robots"
       content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'}
     />
-    <meta name="theme-color" content="#16233f" />
+    <meta name="theme-color" content="#FFC107" />
     <meta name="format-detection" content="telephone=no" />
 
     <link rel="alternate" hreflang="th" href={thHref} />

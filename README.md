@@ -1,4 +1,4 @@
-# ตะวันรถเช่าหาดใหญ่ — tawancarrent.com
+# ตะวันเช่ารถหาดใหญ่ — tawancarrent.com
 
 Astro site built from the Claude Design canvas
 [Tawan Car Rent - Site (1b)](https://claude.ai/design/p/491363b1-dc11-4da0-ad8b-249a15bab301),

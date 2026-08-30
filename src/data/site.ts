@@ -8,14 +8,15 @@
 
 export const business = {
   nameEn: 'TAWAN CAR RENT',
-  nameTh: 'ตะวันรถเช่าหาดใหญ่',
+  nameTh: 'ตะวันเช่ารถหาดใหญ่',
   phone: '091-046-8118',
   phoneHref: 'tel:0910468118',
   /** E.164 — the form Google and schema.org expect. */
   phoneE164: '+66910468118',
   lineId: '@tawan8118',
   lineUrl: 'https://line.me/R/ti/p/@tawan8118',
-  facebookUrl: 'https://www.facebook.com/profile.php?id=100063626855628',
+  facebookUrl:
+    'https://www.facebook.com/people/%E0%B8%95%E0%B8%B0%E0%B8%A7%E0%B8%B1%E0%B8%99%E0%B8%A3%E0%B8%96%E0%B9%80%E0%B8%8A%E0%B9%88%E0%B8%B2%E0%B8%AB%E0%B8%B2%E0%B8%94%E0%B9%83%E0%B8%AB%E0%B8%8D%E0%B9%88%E0%B8%A3%E0%B8%B2%E0%B8%84%E0%B8%B2%E0%B8%96%E0%B8%B9%E0%B8%81/100063626855628/',
   domain: 'tawancarrent.com',
 } as const;
 
@@ -38,7 +39,7 @@ export const placeDetails: {
   postalCode: null,
   latitude: null,
   longitude: null,
-  mapUrl: null,
+  mapUrl: 'https://maps.app.goo.gl/UxzDascrUVEbbsSp9',
 };
 
 /** Route keys. Thai lives at `/…`, English at `/en/…`. */
@@ -53,14 +54,12 @@ export const routePaths: Record<RouteKey, string> = {
   contact: '/contact/',
 };
 
-export type CarCategory = 'eco' | 'sedan' | 'suv' | 'pickup' | 'van';
+export type CarCategory = 'eco' | 'suv';
 export type CarId =
-  | 'eco-1200'
-  | 'sedan-1500'
-  | 'pickup-4door'
-  | 'suv-7'
-  | 'van-11'
-  | 'sedan-1800';
+  | 'vios-2020'
+  | 'ativ-2021'
+  | 'ativ-2024'
+  | 'veloz-2026';
 
 export interface Car {
   id: CarId;
@@ -76,43 +75,30 @@ export interface Car {
 }
 
 export const cars: Car[] = [
-  { id: 'eco-1200', category: 'eco', categoryLabel: 'ECO CAR', price: 800, available: true, featured: true },
-  { id: 'sedan-1500', category: 'sedan', categoryLabel: 'SEDAN', price: 1000, available: true, featured: true },
-  { id: 'pickup-4door', category: 'pickup', categoryLabel: 'PICKUP', price: 1500, available: true, featured: false },
-  { id: 'suv-7', category: 'suv', categoryLabel: 'SUV', price: 1800, available: true, featured: true },
-  { id: 'van-11', category: 'van', categoryLabel: 'VAN', price: 2500, available: true, featured: true },
-  { id: 'sedan-1800', category: 'sedan', categoryLabel: 'SEDAN', price: 1200, available: false, featured: false },
+  { id: 'vios-2020', category: 'eco', categoryLabel: 'ECO CAR', price: 800, available: true, featured: true, photo: '/cars/vios-2020.jpg' },
+  { id: 'ativ-2021', category: 'eco', categoryLabel: 'ECO CAR', price: 800, available: true, featured: true, photo: '/cars/ativ-2021.jpg' },
+  { id: 'ativ-2024', category: 'eco', categoryLabel: 'ECO CAR', price: 900, available: true, featured: true, photo: '/cars/ativ-2024.jpg' },
+  { id: 'veloz-2026', category: 'suv', categoryLabel: 'SUV', price: 1500, available: true, featured: true, photo: '/cars/veloz-2026.jpg' },
 ];
 
-export const carCategoryIds = ['all', 'eco', 'sedan', 'suv', 'pickup', 'van'] as const;
+export const carCategoryIds = ['all', 'eco', 'suv'] as const;
 export type CarCategoryFilter = (typeof carCategoryIds)[number];
 
 /** Home page featured grid, in the mockup's order. */
-export const featuredCarIds: CarId[] = ['eco-1200', 'sedan-1500', 'suv-7', 'van-11'];
+export const featuredCarIds: CarId[] = ['vios-2020', 'ativ-2021', 'ativ-2024', 'veloz-2026'];
 
 /** Numeric rate table. `long` is quoted on request in both languages. */
-export const rates: { id: CarId; short: number; mid: number }[] = [
-  { id: 'eco-1200', short: 800, mid: 750 },
-  { id: 'sedan-1500', short: 1000, mid: 950 },
-  { id: 'pickup-4door', short: 1500, mid: 1400 },
-  { id: 'suv-7', short: 1800, mid: 1700 },
-  { id: 'van-11', short: 2500, mid: 2400 },
-];
-
-/** Review authors: initials and star counts are language-neutral. */
-export const reviewMeta: { id: string; stars: number }[] = [
-  { id: 'b', stars: 5 },
-  { id: 'c', stars: 5 },
-  { id: 'd', stars: 5 },
-  { id: 'e', stars: 5 },
-  { id: 'f', stars: 4 },
-  { id: 'g', stars: 5 },
+export const rates: { id: CarId; short: number; }[] = [
+  { id: 'vios-2020', short: 800 },
+  { id: 'ativ-2021', short: 800 },
+  { id: 'ativ-2024', short: 900 },
+  { id: 'veloz-2026', short: 1500 },
 ];
 
 export const serviceAreaIds = [
-  'hatyai', 'songkhla', 'phatthalung', 'satun', 'pattani', 'yala', 'narathiwat', 'trang',
+  'hatyai', 'songkhla', 'southern'
 ] as const;
 export type ServiceAreaId = (typeof serviceAreaIds)[number];
 
 /** Total cars on the lot; the grid lists the models currently published. */
-export const fleetSize = 12;
+export const fleetSize = 4;

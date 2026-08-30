@@ -1,7 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import Media from '../components/Media.astro';
+import Slideshow from '../components/Slideshow.astro';
 import { cars, featuredCarIds } from '../data/site';
+import { customerPhotos } from '../data/customerPhotos';
 import { pathFor, t, type Locale } from '../i18n';
 
 interface Props {
@@ -12,6 +14,9 @@ const { lang } = Astro.props;
 const d = t(lang);
 
 const priceOf = (id: string) => cars.find((c) => c.id === id)!.price;
+const photoOf = (id: string) => cars.find((c) => c.id === id)!.photo;
+const heroCustomerPhotos = customerPhotos.slice(0, 5);
+const bannerPhoto = lang === 'en' ? '/img/banner-full-eng.webp' : '/img/banner-full.webp';
 ---
 
 <Base lang={lang} route="home" title={d.meta.home.title} description={d.meta.home.description}>
@@ -20,12 +25,12 @@ const priceOf = (id: string) => cars.find((c) => c.id === id)!.price;
     <h1 class="display-xl">{d.home.headingLines[0]}<br />{d.home.headingLines[1]}</h1>
     <p class="hero__lede">{d.home.lede}</p>
     <div class="btnrow">
-      <a class="cta" href={pathFor('contact', lang)}>{d.home.ctaLine}</a>
+      <a class="cta cta--line" href={pathFor('contact', lang)}>{d.home.ctaLine}</a>
       <a class="cta cta--ghost" href={pathFor('cars', lang)}>{d.home.ctaCars}</a>
     </div>
   </section>
 
-  <Media class="media--bleed grayscale" big note={d.home.heroPhotoNote} />
+  <Media class="media--bleed" big src={bannerPhoto} note={d.home.heroPhotoNote} />
 
   <div class="stats">
     {
@@ -48,7 +53,7 @@ const priceOf = (id: string) => cars.find((c) => c.id === id)!.price;
       {
         featuredCarIds.map((id) => (
           <article class="carrow">
-            <Media class="grayscale" alt={d.cars.names[id]} />
+            <Media src={photoOf(id)} alt={d.cars.names[id]} />
             <div>
               <div class="price-xl">{priceOf(id).toLocaleString('en-US')}</div>
               <div class="price-unit">{d.common.perDay}</div>
@@ -71,8 +76,7 @@ const priceOf = (id: string) => cars.find((c) => c.id === id)!.price;
       </div>
       <div>
         <h2 class="h4-like">{d.home.reviewHeading}</h2>
-        <p class="homequote">{d.home.reviewQuote}</p>
-        <span class="byline">{d.home.reviewBy}</span>
+        <Slideshow photos={heroCustomerPhotos} alt={d.home.reviewHeading} />
         <div class="mt-14">
           <a class="arrowlink" href={pathFor('reviews', lang)}>{d.home.readAllReviews}</a>
         </div>

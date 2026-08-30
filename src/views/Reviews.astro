@@ -1,7 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import Media from '../components/Media.astro';
-import { reviewMeta } from '../data/site';
+import { customerPhotos } from '../data/customerPhotos';
 import { pathFor, t, type Locale } from '../i18n';
 
 interface Props {
@@ -11,7 +10,8 @@ interface Props {
 const { lang } = Astro.props;
 const d = t(lang);
 
-const starString = (n: number) => '★'.repeat(n) + '☆'.repeat(5 - n);
+// How many photos render up front; the rest reveal via the "load more" button.
+const PAGE_SIZE = 15;
 ---
 
 <Base
@@ -36,39 +36,46 @@ const starString = (n: number) => '★'.repeat(n) + '☆'.repeat(5 - n);
     </div>
   </section>
 
-  <section class="section--quote">
-    <p class="pullquote">{d.reviews.featuredQuote}</p>
-    <span class="byline">{d.reviews.featuredBy}</span>
-  </section>
+  <section class="section section--tight">
+    <p class="gallerylede">{d.reviews.galleryNote}</p>
 
-  <div class="inkgrid inkgrid--3">
-    {
-      reviewMeta.map((meta, i) => {
-        const r = d.reviews.items[i];
-        return (
-          <article class="review">
-            <div class="review__head">
-              <Media class="grayscale" />
-              <div>
-                <div class="review__name">{r.name}</div>
-                <div class="review__place">{r.place}</div>
-              </div>
-              <span class="stars" aria-label={d.reviews.starsLabel(meta.stars)}>
-                {starString(meta.stars)}
-              </span>
-            </div>
-            <p>{r.text}</p>
-          </article>
-        );
-      })
-    }
-  </div>
-
-  <section class="section section--tight section--ruled">
-    <h2 class="h4-like">{d.reviews.galleryHeading}</h2>
-    <div class="inkgrid inkgrid--5 gallery">
-      {Array.from({ length: 5 }).map(() => <Media class="grayscale" />)}
+    <div class="inkgrid inkgrid--5 gallery" data-gallery data-page-size={PAGE_SIZE}>
+      {
+        customerPhotos.map((src, i) => (
+          <div class="media" data-gallery-item hidden={i >= PAGE_SIZE ? true : undefined}>
+            <img src={src} alt="" loading="lazy" decoding="async" />
+          </div>
+        ))
+      }
     </div>
-    <p class="notecaption">{d.reviews.galleryNote}</p>
+
+    {
+      customerPhotos.length > PAGE_SIZE && (
+        <div class="loadmore">
+          <button type="button" class="cta cta--ghost" data-gallery-more>
+            {d.reviews.loadMore}
+          </button>
+        </div>
+      )
+    }
   </section>
 </Base>
+
+<script>
+  // Progressive enhancement: without JS every photo is already in the markup and visible.
+  const grid = document.querySelector<HTMLElement>('[data-gallery]');
+  const more = document.querySelector<HTMLButtonElement>('[data-gallery-more]');
+
+  if (grid && more) {
+    const pageSize = Number(grid.dataset.pageSize ?? '15');
+    const items = Array.from(grid.querySelectorAll<HTMLElement>('[data-gallery-item]'));
+
+    for (const el of items.slice(pageSize)) el.hidden = true;
+
+    more.addEventListener('click', () => {
+      const hidden = items.filter((el) => el.hidden);
+      for (const el of hidden.slice(0, pageSize)) el.hidden = false;
+      if (hidden.length <= pageSize) more.hidden = true;
+    });
+  }
+</script>

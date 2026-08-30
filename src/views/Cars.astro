@@ -65,7 +65,7 @@ const fleetSchema = {
   <section class="hero">
     <div class="kicker">{d.cars.kicker}</div>
     <h1 class="display-l">
-      {fleetLines[0]}<br />{fleetLines[1]}
+      {fleetLines[0]}<br />
     </h1>
     <p class="hero__lede">{d.cars.lede}</p>
   </section>
@@ -110,7 +110,6 @@ const fleetSchema = {
               <tr>
                 <th scope="row">{d.cars.names[r.id]}</th>
                 <td>{money(r.short)}</td>
-                <td>{money(r.mid)}</td>
                 <td>{d.cars.rateOnRequest}</td>
               </tr>
             ))
@@ -125,6 +124,23 @@ const fleetSchema = {
           <div>
             <div class="minicols__h">{n.head}</div>
             <div class="minicols__b" set:html={n.body} />
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section section--tight section--ruled">
+    <h2 class="section-title">{d.cars.documentsHeading}</h2>
+
+    <div class="docgroups">
+      {
+        d.cars.documentGroups.map((g) => (
+          <div>
+            <div class="docgroups__h">{g.heading}</div>
+            <ul class="docgroups__list">
+              {g.items.map((item) => <li>{item}</li>)}
+            </ul>
           </div>
         ))
       }

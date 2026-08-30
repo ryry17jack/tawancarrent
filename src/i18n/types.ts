@@ -53,8 +53,6 @@ export interface Dict {
     areasHeading: string;
     areasLines: [string, string];
     reviewHeading: string;
-    reviewQuote: string;
-    reviewBy: string;
     readAllReviews: string;
   };
 
@@ -71,21 +69,19 @@ export interface Dict {
     featuredSpecs: Record<CarId, string>;
     statuses: Record<CarId, string>;
     ratesHeading: string;
-    rateColumns: [string, string, string, string];
+    rateColumns: [string, string, string];
     rateOnRequest: string;
     notes: { head: string; body: string }[];
+    documentsHeading: string;
+    documentGroups: { heading: string; items: string[] }[];
   };
 
   reviews: {
     kicker: string;
     headingLines: [string, string];
     scores: { n: string; label: string }[];
-    featuredQuote: string;
-    featuredBy: string;
-    items: { name: string; place: string; text: string }[];
-    starsLabel: (stars: number) => string;
-    galleryHeading: string;
     galleryNote: string;
+    loadMore: string;
   };
 
   about: {
@@ -98,6 +94,8 @@ export interface Dict {
     insuranceFacts: { k: string; v: string }[];
     areasHeading: string;
     areas: Record<ServiceAreaId, string>;
+    registrationHeading: string;
+    registrationNote: string;
   };
 
   contact: {

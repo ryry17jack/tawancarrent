@@ -1,0 +1,55 @@
+---
+/**
+ * A small auto-rotating photo slideshow — a stack of absolutely positioned
+ * images cross-fading via CSS, advanced by the inline script below. Without
+ * JS the first photo stays visible, so the section still reads fine.
+ */
+interface Props {
+  photos: string[];
+  alt?: string;
+  class?: string;
+}
+
+const { photos, alt = '', class: className } = Astro.props;
+---
+
+<div class:list={['media', 'media--taller', 'slideshow', className]} data-slideshow>
+  {
+    photos.map((src, i) => (
+      <img src={src} alt={alt} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" class:list={[i === 0 && 'is-active']} />
+    ))
+  }
+  {
+    photos.length > 1 && (
+      <div class="slideshow__dots">
+        {photos.map((_, i) => <button type="button" aria-label={`${i + 1} / ${photos.length}`} class:list={[i === 0 && 'is-active']} />)}
+      </div>
+    )
+  }
+</div>
+
+<script>
+  for (const el of document.querySelectorAll<HTMLElement>('[data-slideshow]')) {
+    const imgs = Array.from(el.querySelectorAll<HTMLImageElement>('img'));
+    const dots = Array.from(el.querySelectorAll<HTMLButtonElement>('.slideshow__dots button'));
+    if (imgs.length < 2) continue;
+
+    let current = 0;
+    const show = (next: number) => {
+      imgs[current]?.classList.remove('is-active');
+      dots[current]?.classList.remove('is-active');
+      current = next;
+      imgs[current]?.classList.add('is-active');
+      dots[current]?.classList.add('is-active');
+    };
+
+    let timer = window.setInterval(() => show((current + 1) % imgs.length), 4000);
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => {
+        show(i);
+        window.clearInterval(timer);
+        timer = window.setInterval(() => show((current + 1) % imgs.length), 4000);
+      });
+    });
+  }
+</script>
