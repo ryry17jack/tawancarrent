@@ -98,12 +98,14 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
   .topbar__inner { height: auto; flex-wrap: wrap; gap: 12px; padding-block: 12px; }
   .mainnav {
     order: 3; width: 100%; margin-left: 0; gap: 0;
-    overflow-x: auto; scrollbar-width: none;
+    flex-wrap: wrap; justify-content: center;
     border-top: 1px solid var(--color-border);
   }
-  .mainnav::-webkit-scrollbar { display: none; }
-  .mainnav a { padding: 14px; white-space: nowrap; }
-  .mainnav a[aria-current="page"]::after { bottom: 8px; left: 14px; }
+  .mainnav a { padding: 12px 10px; white-space: nowrap; }
+  .mainnav a[aria-current="page"]::after { bottom: 8px; left: 10px; }
+}
+@media (max-width: 480px) {
+  .mainnav a { padding: 10px 6px; font-size: 13px; }
 }
 
 /* --- hero ------------------------------------------------------- */
