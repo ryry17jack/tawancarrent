@@ -1,10 +1,10 @@
 ---
-import Base from '../layouts/Base.astro';
-import Media from '../components/Media.astro';
-import Slideshow from '../components/Slideshow.astro';
-import { cars, featuredCarIds } from '../data/site';
-import { customerPhotos } from '../data/customerPhotos';
-import { pathFor, t, type Locale } from '../i18n';
+import Base from "../layouts/Base.astro";
+import Media from "../components/Media.astro";
+import Slideshow from "../components/Slideshow.astro";
+import { cars, featuredCarIds } from "../data/site";
+import { customerPhotos } from "../data/customerPhotos";
+import { pathFor, t, type Locale } from "../i18n";
 
 interface Props {
   lang: Locale;
@@ -16,21 +16,42 @@ const d = t(lang);
 const priceOf = (id: string) => cars.find((c) => c.id === id)!.price;
 const photoOf = (id: string) => cars.find((c) => c.id === id)!.photo;
 const heroCustomerPhotos = customerPhotos.slice(0, 5);
-const bannerPhoto = lang === 'en' ? '/img/banner-full-eng.webp' : '/img/banner-full.webp';
+const bannerPhoto =
+  lang === "en" ? "/img/banner-full-eng.webp" : "/img/banner-full.webp";
+const bannerPhotoMobile =
+  lang === "en" ? "/img/banner-square-eng.webp" : "/img/banner-square.webp";
 ---
 
-<Base lang={lang} route="home" title={d.meta.home.title} description={d.meta.home.description}>
-  <section class="hero hero--home">
+<Base
+  lang={lang}
+  route="home"
+  title={d.meta.home.title}
+  description={d.meta.home.description}
+>
+  <section
+    class="hero hero--home"
+    style={`--hero-bg: url(${bannerPhoto}); --hero-bg-mobile: url(${bannerPhotoMobile});`}
+  >
     <div class="kicker">{d.home.kicker}</div>
-    <h1 class="display-xl">{d.home.headingLines[0]}<br />{d.home.headingLines[1]}</h1>
+    <h1 class="display-xl">
+      {d.home.headingLines[0]}<br />{d.home.headingLines[1]}
+    </h1>
     <p class="hero__lede">{d.home.lede}</p>
     <div class="btnrow">
-      <a class="cta cta--line" href={pathFor('contact', lang)}>{d.home.ctaLine}</a>
-      <a class="cta cta--ghost" href={pathFor('cars', lang)}>{d.home.ctaCars}</a>
+      <a class="cta cta--line" href={pathFor("contact", lang)}
+        >{d.home.ctaLine}</a
+      >
+      <a class="cta cta--ghost" href={pathFor("cars", lang)}>{d.home.ctaCars}</a
+      >
     </div>
+    <img
+      class="hero__banner-mobile"
+      src={bannerPhotoMobile}
+      alt={d.home.heroPhotoNote}
+      loading="eager"
+      decoding="async"
+    />
   </section>
-
-  <Media class="media--bleed" big src={bannerPhoto} note={d.home.heroPhotoNote} />
 
   <div class="stats">
     {
@@ -46,7 +67,7 @@ const bannerPhoto = lang === 'en' ? '/img/banner-full-eng.webp' : '/img/banner-f
   <section class="section">
     <div class="sectionhead">
       <h2>{d.home.carsHeading}</h2>
-      <a class="arrowlink" href={pathFor('cars', lang)}>{d.common.seeAll}</a>
+      <a class="arrowlink" href={pathFor("cars", lang)}>{d.common.seeAll}</a>
     </div>
 
     <div class="inkgrid inkgrid--2">
@@ -55,7 +76,7 @@ const bannerPhoto = lang === 'en' ? '/img/banner-full-eng.webp' : '/img/banner-f
           <article class="carrow">
             <Media src={photoOf(id)} alt={d.cars.names[id]} />
             <div>
-              <div class="price-xl">{priceOf(id).toLocaleString('en-US')}</div>
+              <div class="price-xl">{priceOf(id).toLocaleString("en-US")}</div>
               <div class="price-unit">{d.common.perDay}</div>
               <h3 class="car-name">{d.cars.names[id]}</h3>
               <div class="car-spec">{d.cars.featuredSpecs[id]}</div>
@@ -67,7 +88,7 @@ const bannerPhoto = lang === 'en' ? '/img/banner-full-eng.webp' : '/img/banner-f
   </section>
 
   <section class="section section--tight section--ruled">
-    <div class="split split--40">
+    <div class="split split--40 split--3">
       <div>
         <h2 class="h4-like">{d.home.areasHeading}</h2>
         <div class="bigareas">
@@ -76,9 +97,23 @@ const bannerPhoto = lang === 'en' ? '/img/banner-full-eng.webp' : '/img/banner-f
       </div>
       <div>
         <h2 class="h4-like">{d.home.reviewHeading}</h2>
-        <Slideshow photos={heroCustomerPhotos} alt={d.home.reviewHeading} />
+        <Slideshow photos={heroCustomerPhotos} allPhotos={customerPhotos} alt={d.home.reviewHeading} />
         <div class="mt-14">
-          <a class="arrowlink" href={pathFor('reviews', lang)}>{d.home.readAllReviews}</a>
+          <a class="arrowlink" href={pathFor("reviews", lang)}
+            >{d.home.readAllReviews}</a
+          >
+        </div>
+      </div>
+      <div>
+        <h2 class="h4-like">{d.about.registrationHeading}</h2>
+        <div class="docphoto">
+          <img
+            src="/img/tabian.jpg"
+            alt={d.about.registrationHeading}
+            loading="lazy"
+            decoding="async"
+          />
+          <p class="notecaption">{d.about.registrationNote}</p>
         </div>
       </div>
     </div>

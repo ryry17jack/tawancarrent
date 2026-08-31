@@ -6,14 +6,20 @@
  */
 interface Props {
   photos: string[];
+  /** Full photo pool to draw a fresh random selection from on every page load. */
+  allPhotos?: string[];
   alt?: string;
   class?: string;
 }
 
-const { photos, alt = '', class: className } = Astro.props;
+const { photos, allPhotos, alt = '', class: className } = Astro.props;
 ---
 
-<div class:list={['media', 'media--taller', 'slideshow', className]} data-slideshow>
+<div
+  class:list={['media', 'media--taller', 'slideshow', className]}
+  data-slideshow
+  data-all-photos={allPhotos && allPhotos.length > photos.length ? JSON.stringify(allPhotos) : undefined}
+>
   {
     photos.map((src, i) => (
       <img src={src} alt={alt} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" class:list={[i === 0 && 'is-active']} />
@@ -32,6 +38,16 @@ const { photos, alt = '', class: className } = Astro.props;
   for (const el of document.querySelectorAll<HTMLElement>('[data-slideshow]')) {
     const imgs = Array.from(el.querySelectorAll<HTMLImageElement>('img'));
     const dots = Array.from(el.querySelectorAll<HTMLButtonElement>('.slideshow__dots button'));
+
+    // Swap the server-rendered photos for a fresh random pick from the full
+    // folder on every load — the site is static, so this is the only place
+    // "random every time" can happen.
+    const pool = el.dataset.allPhotos;
+    if (pool) {
+      const picked = (JSON.parse(pool) as string[]).sort(() => Math.random() - 0.5).slice(0, imgs.length);
+      imgs.forEach((img, i) => picked[i] && (img.src = picked[i]));
+    }
+
     if (imgs.length < 2) continue;
 
     let current = 0;
