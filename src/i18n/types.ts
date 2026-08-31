@@ -32,6 +32,30 @@ export interface Dict {
   meta: { home: PageMeta; cars: PageMeta; reviews: PageMeta; about: PageMeta; contact: PageMeta; notFound: PageMeta };
   breadcrumbHome: string;
 
+  /**
+   * Real alt text for the photos. Kept apart from the design's placeholder
+   * captions (`heroPhotoNote`, `photoNote`, …) — those describe the *slot* for
+   * a human reading the mockup and are useless to a screen reader or to image
+   * search.
+   */
+  alt: {
+    heroBanner: string;
+    /** `{n}` is replaced with the photo's 1-based index. */
+    customerPhoto: string;
+    registration: string;
+  };
+
+  /**
+   * Long-tail question/answer pairs. Rendered on the home page and mirrored
+   * into FAQPage JSON-LD, so the phrasing here should match how people
+   * actually type the question into Google.
+   */
+  faq: {
+    heading: string;
+    lede: string;
+    items: { q: string; a: string }[];
+  };
+
   common: {
     perDay: string;
     seeAll: string;

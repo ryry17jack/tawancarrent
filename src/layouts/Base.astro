@@ -1,7 +1,7 @@
 ---
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { business, placeDetails, serviceAreaIds } from '../data/site';
+import { business, cars, placeDetails, searchNames, serviceAreaIds } from '../data/site';
 import { pathFor, switchLocalePath, t, type Locale } from '../i18n';
 import type { RouteKey } from '../data/site';
 
@@ -23,6 +23,12 @@ interface Props {
   /** Trail *after* the home page. */
   breadcrumbs?: { label: string; href: string }[];
   noindex?: boolean;
+  /**
+   * The page's LCP image, preloaded so it is not discovered late. Pass the
+   * mobile and desktop sources separately with the same media queries the CSS
+   * uses, or the browser will fetch both.
+   */
+  preloadImage?: { href: string; media?: string }[];
 }
 
 const {
@@ -33,6 +39,7 @@ const {
   image = '/og.jpg',
   breadcrumbs = [],
   noindex = false,
+  preloadImage = [],
 } = Astro.props;
 
 const d = t(lang);
@@ -50,11 +57,12 @@ const graph: Record<string, unknown>[] = [
     '@type': 'AutoRental',
     '@id': `${origin}/#business`,
     name: d.legalName,
-    alternateName: [business.nameEn, business.nameTh],
+    alternateName: [...searchNames],
     description: d.businessDescription,
     url: origin,
     telephone: business.phoneE164,
     image: `${origin}/og.jpg`,
+    logo: `${origin}/favicon.svg`,
     address: {
       '@type': 'PostalAddress',
       ...(placeDetails.streetAddress ? { streetAddress: placeDetails.streetAddress } : {}),
@@ -85,7 +93,39 @@ const graph: Record<string, unknown>[] = [
     priceRange: '฿800–฿2,500',
     currenciesAccepted: 'THB',
     paymentAccepted: lang === 'th' ? 'เงินสด, โอนธนาคาร' : 'Cash, Bank transfer',
+    knowsLanguage: ['th', 'en'],
     sameAs: [business.facebookUrl, business.lineUrl],
+    // The rentable fleet hangs off the business entity, so the daily rates are
+    // attached to the shop on every page — not only on /cars/, which is the
+    // one page carrying the ItemList.
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: d.meta.cars.title,
+      itemListElement: cars.map((car) => ({
+        '@type': 'Offer',
+        businessFunction: 'http://purl.org/goodrelations/v1#LeaseOut',
+        availability: car.available ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        priceCurrency: 'THB',
+        price: car.price,
+        priceSpecification: {
+          '@type': 'UnitPriceSpecification',
+          priceCurrency: 'THB',
+          price: car.price,
+          unitCode: 'DAY',
+        },
+        itemOffered: {
+          '@type': 'Car',
+          name: d.cars.names[car.id],
+          vehicleConfiguration: car.categoryLabel,
+          vehicleTransmission: 'AutomaticTransmission',
+        },
+      })),
+    },
+    potentialAction: {
+      '@type': 'ReserveAction',
+      name: d.common.bookToday,
+      target: { '@type': 'EntryPoint', urlTemplate: business.lineUrl },
+    },
   },
   {
     '@type': 'WebSite',
@@ -141,6 +181,12 @@ const jsonLd = { '@context': 'https://schema.org', '@graph': graph };
     />
     <meta name="theme-color" content="#FFC107" />
     <meta name="format-detection" content="telephone=no" />
+
+    {
+      preloadImage.map((p) => (
+        <link rel="preload" as="image" href={p.href} media={p.media} fetchpriority="high" />
+      ))
+    }
 
     <link rel="alternate" hreflang="th" href={thHref} />
     <link rel="alternate" hreflang="en" href={enHref} />

@@ -47,6 +47,51 @@ export const en: Dict = {
   },
   breadcrumbHome: 'Home',
 
+  alt: {
+    heroBanner: 'Cheap car rental in Hat Yai — the Tawan Car Rent fleet outside the shop in Hat Yai, Songkhla',
+    customerPhoto: 'A customer collecting their rental car from Tawan Car Rent Hat Yai {n}',
+    registration: 'Commercial registration certificate of Tawan Car Rent Hat Yai Limited Partnership',
+  },
+
+  faq: {
+    heading: 'Frequently asked questions',
+    lede: 'What travellers ask us most before booking a car in Hat Yai.',
+    items: [
+      {
+        q: 'How much does it cost to rent a car in Hat Yai?',
+        a: 'At Tawan Car Rent, eco cars such as the Toyota Vios and Yaris Ativ start at ฿800 a day, and the 7-seat Toyota Veloz SUV is ฿1,500 a day. Every rate already includes first-class insurance and compulsory motor insurance, with no hidden fees — and rentals of 3 days or more get a discount.',
+      },
+      {
+        q: 'Do I need a credit card to rent a car in Hat Yai?',
+        a: 'No credit card is required. A national ID card or passport plus a valid driving licence is enough. You can pay in cash or by bank transfer, and we can issue a receipt or tax invoice.',
+      },
+      {
+        q: 'Do you deliver to Hat Yai International Airport?',
+        a: 'Yes — pickup and drop-off at Hat Yai International Airport (HDY) and around central Hat Yai are free. Send us your flight number and arrival time on LINE @tawan8118 in advance and we will meet you with the car.',
+      },
+      {
+        q: 'What documents do I need to rent a car?',
+        a: 'Travellers need an ID card or passport, a driving licence, and a return flight ticket. Students, civil servants and company employees need an ID card, a driving licence and their institutional ID. Business owners need an ID card, a driving licence and a commercial registration document.',
+      },
+      {
+        q: 'Are the cars insured, and what happens after an accident?',
+        a: 'Every car carries first-class insurance plus compulsory motor insurance, included in the rental price. If anything happens while you have the car, call us on 091-046-8118 straight away and we will deal with the insurer for you.',
+      },
+      {
+        q: 'Which areas do you cover — can I drive outside Hat Yai?',
+        a: 'We serve Hat Yai and Songkhla province, and you are welcome to drive anywhere in southern Thailand — Satun, Phatthalung, Trang, Nakhon Si Thammarat, Pattani, Yala and Narathiwat included. Just tell us your route in advance on LINE @tawan8118.',
+      },
+      {
+        q: 'How do I book, and what are your opening hours?',
+        a: 'Add us on LINE @tawan8118 or call 091-046-8118. We are open every day from 07:00 to 22:00. Cars go quickly over Thai holidays and long weekends, so booking 3–7 days ahead is recommended.',
+      },
+      {
+        q: 'Do you offer weekly or monthly rentals?',
+        a: 'Yes. We have special rates for rentals of 7 days or more and for monthly hire, for both individuals and companies. Message us on LINE @tawan8118 for a quote.',
+      },
+    ],
+  },
+
   common: {
     perDay: 'THB / day',
     seeAll: 'See all →',
@@ -58,7 +103,7 @@ export const en: Dict = {
 
   home: {
     kicker: 'CAR RENTAL · HAT YAI · SONGKHLA · SOUTHERN THAILAND',
-    headingLines: ['Rent a car', 'from ฿800'],
+    headingLines: ['Rent a car in Hat Yai', 'from ฿800'],
     lede: 'No credit card required · Free airport pickup · First-class insurance on every car',
     ctaLine: 'Add us on LINE @tawan8118',
     ctaCars: 'See all cars',
@@ -78,7 +123,7 @@ export const en: Dict = {
 
   cars: {
     kicker: 'OUR CARS',
-    headingLines: ['{n} cars', 'for rent'],
+    headingLines: ['Car rental Hat Yai', '{n} cars for rent'],
     lede: 'Daily rates include first-class insurance · Discounts on rentals of 3 days or more',
     filters: {
       all: 'All',

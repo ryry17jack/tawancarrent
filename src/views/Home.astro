@@ -20,6 +20,24 @@ const bannerPhoto =
   lang === "en" ? "/img/banner-full-eng.webp" : "/img/banner-full.webp";
 const bannerPhotoMobile =
   lang === "en" ? "/img/banner-square-eng.webp" : "/img/banner-square.webp";
+
+// The banner is the LCP element in both layouts, so both sources are
+// preloaded behind the same 700px query the CSS switches on — see
+// `.hero__banner-mobile` in site.css. Keep the two in step.
+const heroPreload = [
+  { href: bannerPhoto, media: "(min-width: 701px)" },
+  { href: bannerPhotoMobile, media: "(max-width: 700px)" },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: d.faq.items.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+};
 ---
 
 <Base
@@ -27,6 +45,7 @@ const bannerPhotoMobile =
   route="home"
   title={d.meta.home.title}
   description={d.meta.home.description}
+  preloadImage={heroPreload}
 >
   <section
     class="hero hero--home"
@@ -47,9 +66,10 @@ const bannerPhotoMobile =
     <img
       class="hero__banner-mobile"
       src={bannerPhotoMobile}
-      alt={d.home.heroPhotoNote}
+      alt={d.alt.heroBanner}
       loading="eager"
       decoding="async"
+      fetchpriority="high"
     />
   </section>
 
@@ -97,7 +117,11 @@ const bannerPhotoMobile =
       </div>
       <div>
         <h2 class="h4-like">{d.home.reviewHeading}</h2>
-        <Slideshow photos={heroCustomerPhotos} allPhotos={customerPhotos} alt={d.home.reviewHeading} />
+        <Slideshow
+          photos={heroCustomerPhotos}
+          allPhotos={customerPhotos}
+          alt={d.alt.customerPhoto.replace("{n}", "").trim()}
+        />
         <div class="mt-14">
           <a class="arrowlink" href={pathFor("reviews", lang)}
             >{d.home.readAllReviews}</a
@@ -109,7 +133,7 @@ const bannerPhotoMobile =
         <div class="docphoto">
           <img
             src="/img/tabian.jpg"
-            alt={d.about.registrationHeading}
+            alt={d.alt.registration}
             loading="lazy"
             decoding="async"
           />
@@ -118,4 +142,22 @@ const bannerPhotoMobile =
       </div>
     </div>
   </section>
+
+  <section class="section section--tight section--ruled">
+    <h2 class="section-title">{d.faq.heading}</h2>
+    <p class="gallerylede">{d.faq.lede}</p>
+
+    <div class="faq">
+      {
+        d.faq.items.map((item, i) => (
+          <details class="faq__item" open={i === 0}>
+            <summary class="faq__q">{item.q}</summary>
+            <div class="faq__a">{item.a}</div>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
 </Base>

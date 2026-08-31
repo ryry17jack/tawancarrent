@@ -43,7 +43,12 @@ const PAGE_SIZE = 15;
       {
         customerPhotos.map((src, i) => (
           <div class="media" data-gallery-item hidden={i >= PAGE_SIZE ? true : undefined}>
-            <img src={src} alt="" loading="lazy" decoding="async" />
+            <img
+              src={src}
+              alt={d.alt.customerPhoto.replace('{n}', String(i + 1))}
+              loading="lazy"
+              decoding="async"
+            />
           </div>
         ))
       }

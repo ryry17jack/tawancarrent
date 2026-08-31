@@ -21,6 +21,23 @@ export const business = {
 } as const;
 
 /**
+ * The name variants people actually search for and that the shop is referred
+ * to by elsewhere — the Facebook page is "ตะวันรถเช่าหาดใหญ่ราคาถูก" while the
+ * registration reads "ตะวันเช่ารถหาดใหญ่", and both word orders get typed.
+ * Emitted as `alternateName` so Google resolves every variant to one entity
+ * instead of treating them as unrelated businesses.
+ */
+export const searchNames = [
+  'ตะวันเช่ารถหาดใหญ่',
+  'ตะวันเช่ารถหาดใหญ่ราคาถูก',
+  'ตะวันรถเช่าหาดใหญ่',
+  'ตะวันรถเช่าหาดใหญ่ราคาถูก',
+  'รถเช่าหาดใหญ่ราคาถูก',
+  'Tawan Car Rent',
+  'Tawan Car Rent Hat Yai',
+] as const;
+
+/**
  * Local-SEO fields Google weighs heavily for a "near me" business. Fill these
  * in and they flow into the LocalBusiness JSON-LD automatically; left null,
  * they are omitted rather than guessed. Match them exactly to the Google

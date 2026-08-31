@@ -323,6 +323,29 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
 .docgroups__list li::before { content: '–'; position: absolute; left: 0; color: var(--muted-2); }
 @media (max-width: 760px) { .docgroups { grid-template-columns: 1fr; gap: 22px; } }
 
+/* --- faq ---------------------------------------------------------- */
+/* <details> keeps every answer in the markup whether or not it is open, so
+   the copy is indexable and readable without JS. */
+.faq { border-top: var(--rule); }
+.faq__item { border-bottom: var(--rule); }
+.faq__q {
+  font: 600 17px/1.5 var(--font-thai); color: var(--color-text);
+  padding: 18px 34px 18px 0; cursor: pointer; position: relative;
+  list-style: none;
+}
+.faq__q::-webkit-details-marker { display: none; }
+.faq__q::after {
+  content: '+'; position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+  font: 400 22px/1 "Archivo Variable", "Archivo", sans-serif; color: var(--color-primary-active);
+}
+.faq__item[open] .faq__q::after { content: '–'; }
+.faq__q:focus-visible { outline: 2px solid var(--color-primary-active); outline-offset: 2px; }
+.faq__a {
+  font: 400 15px/1.85 var(--font-thai); color: var(--muted);
+  padding: 0 34px 20px 0; max-width: 72ch;
+}
+@media (max-width: 760px) { .faq__q { font-size: 16px; } }
+
 /* --- reviews ------------------------------------------------------ */
 .scorerow { display: flex; flex-wrap: wrap; gap: 44px; margin-top: 28px; }
 .score__n { font: 800 46px/1 "Archivo Variable", "Archivo", sans-serif; color: var(--color-text-inverse); }
