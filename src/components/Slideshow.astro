@@ -3,32 +3,69 @@
  * A small auto-rotating photo slideshow — a stack of absolutely positioned
  * images cross-fading via CSS, advanced by the inline script below. Without
  * JS the first photo stays visible, so the section still reads fine.
+ *
+ * The photos are resolved through `getImage()` rather than <Image> because the
+ * script swaps `src` at runtime: a single deterministic URL per photo is what
+ * a swap can point at, where a srcset would leave the browser holding a stale
+ * candidate list. Every derivative is still a hashed, resized webp.
  */
+import { getImage } from 'astro:assets';
+
 interface Props {
-  photos: string[];
+  photos: ImageMetadata[];
   /** Full photo pool to draw a fresh random selection from on every page load. */
-  allPhotos?: string[];
+  allPhotos?: ImageMetadata[];
   alt?: string;
   class?: string;
 }
 
 const { photos, allPhotos, alt = '', class: className } = Astro.props;
+
+/** The slot is ~460px wide at most; 2x covers retina without a 1MB download. */
+const SLIDE_WIDTH = 920;
+const SLIDE_HEIGHT = 700;
+
+const optimize = (src: ImageMetadata) =>
+  getImage({
+    src,
+    width: SLIDE_WIDTH,
+    height: SLIDE_HEIGHT,
+    format: 'webp',
+    quality: 72,
+    // One derivative per photo. The pool is 72 images and the script swaps a
+    // bare `src`, so a srcset per photo would be hundreds of unused files.
+    layout: 'none',
+  });
+
+const slides = await Promise.all(photos.map(optimize));
+const pool =
+  allPhotos && allPhotos.length > photos.length
+    ? (await Promise.all(allPhotos.map(optimize))).map((img) => img.src)
+    : undefined;
 ---
 
 <div
   class:list={['media', 'media--taller', 'slideshow', className]}
   data-slideshow
-  data-all-photos={allPhotos && allPhotos.length > photos.length ? JSON.stringify(allPhotos) : undefined}
+  data-all-photos={pool ? JSON.stringify(pool) : undefined}
 >
   {
-    photos.map((src, i) => (
-      <img src={src} alt={alt} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" class:list={[i === 0 && 'is-active']} />
+    slides.map((img, i) => (
+      <img
+        src={img.src}
+        width={SLIDE_WIDTH}
+        height={SLIDE_HEIGHT}
+        alt={alt}
+        loading={i === 0 ? 'eager' : 'lazy'}
+        decoding="async"
+        class:list={[i === 0 && 'is-active']}
+      />
     ))
   }
   {
-    photos.length > 1 && (
+    slides.length > 1 && (
       <div class="slideshow__dots">
-        {photos.map((_, i) => <button type="button" aria-label={`${i + 1} / ${photos.length}`} class:list={[i === 0 && 'is-active']} />)}
+        {slides.map((_, i) => <button type="button" aria-label={`${i + 1} / ${slides.length}`} class:list={[i === 0 && 'is-active']} />)}
       </div>
     )
   }

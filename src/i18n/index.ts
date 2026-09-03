@@ -1,4 +1,4 @@
-import { routePaths, type RouteKey } from '../data/site';
+import { landingSlugs, routePaths, type LandingId, type RouteKey } from '../data/site';
 import { en } from './en';
 import { th } from './th';
 import { locales, type Dict, type Locale } from './types';
@@ -21,6 +21,15 @@ export function pathFor(route: RouteKey, locale: Locale): string {
   const base = routePaths[route];
   if (locale === defaultLocale) return base;
   return base === '/' ? '/en/' : `/en${base}`;
+}
+
+/**
+ * Path for a landing route. Same prefixing rule as `pathFor`, so
+ * `switchLocalePath` round-trips these URLs without a second lookup table.
+ */
+export function landingPathFor(id: LandingId, locale: Locale): string {
+  const base = `/rent/${landingSlugs[id]}/`;
+  return locale === defaultLocale ? base : `/en${base}`;
 }
 
 /**

@@ -448,3 +448,89 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); }
   color: var(--ink);
 }
 .rates tbody tr:last-child th { border-bottom: var(--rule); }
+
+/* --- floating LINE / call CTA ------------------------------------- */
+/* Pinned to the viewport on every page. Desktop: a labelled pill stack in the
+   corner. Phone: a full-width two-up bar, which is where the thumb already is
+   and which cannot be scrolled past. */
+.floatcta {
+  position: fixed; z-index: 60;
+  right: 20px; bottom: 20px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.floatcta__btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 18px; text-decoration: none;
+  font: 800 14px/1 "Archivo Variable", "Archivo", sans-serif;
+  font-family: "Archivo Variable", "Archivo", var(--font-thai);
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--color-text);
+}
+.floatcta__icon { flex: none; }
+.floatcta__btn--line { background: var(--color-line); color: var(--color-text-inverse); }
+.floatcta__btn--line:hover { background: var(--color-line-hover); color: var(--color-text-inverse); text-decoration: none; }
+.floatcta__btn--call { background: var(--color-primary); color: var(--color-on-primary); }
+.floatcta__btn--call:hover { background: var(--color-primary-hover); color: var(--color-on-primary); text-decoration: none; }
+
+@media (max-width: 760px) {
+  .floatcta {
+    right: 0; left: 0; bottom: 0;
+    flex-direction: row; gap: 0;
+    /* Home-indicator gutter on iOS, 0 everywhere else. */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--color-text);
+  }
+  .floatcta__btn {
+    flex: 1 1 0; justify-content: center;
+    padding: 15px 10px; border: 0; box-shadow: none;
+    border-top: 2px solid var(--color-text);
+  }
+  .floatcta__btn + .floatcta__btn { border-left: 2px solid var(--color-text); }
+
+  /* Reserve the bar's height so it never sits on top of the footer's last
+     line — the one place on the page a covered element would cost a click. */
+  .shell { padding-bottom: calc(54px + env(safe-area-inset-bottom, 0px)); }
+}
+
+@media (max-width: 360px) {
+  .floatcta__label { font-size: 13px; }
+}
+
+@media print { .floatcta { display: none; } }
+
+/* --- landing pages ------------------------------------------------- */
+.landing-lede { font: 500 18px/1.6 var(--font-thai); max-width: 46ch; margin: 0 0 28px; }
+.landing-intro { max-width: 74ch; }
+.landing-points { list-style: none; margin: 0; padding: 0; }
+.landing-points li {
+  position: relative; padding: 12px 0 12px 26px;
+  border-bottom: var(--rule-soft); font: 400 15px/1.7 var(--font-thai);
+}
+.landing-points li:last-child { border-bottom: var(--rule); }
+.landing-points li::before {
+  content: '✓'; position: absolute; left: 0; top: 12px;
+  color: var(--color-primary-active); font-weight: 800;
+}
+
+/* --- footer link columns ------------------------------------------- */
+.footlinks {
+  background: var(--color-navy); color: var(--color-text-inverse);
+  padding: 30px var(--gutter);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+.footlinks__h {
+  font: 800 10px/1 "Archivo Variable", "Archivo", sans-serif; letter-spacing: 0.16em;
+  color: var(--color-primary); margin-bottom: 14px;
+  font-family: "Archivo Variable", "Archivo", var(--font-thai);
+}
+.footlinks__list {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 28px;
+  margin: 0; padding: 0; list-style: none;
+}
+.footlinks__list a {
+  color: rgba(255, 255, 255, 0.82); text-decoration: none;
+  font: 400 14px/1.6 var(--font-thai);
+}
+.footlinks__list a:hover { color: var(--color-primary); text-decoration: underline; }
+@media (max-width: 760px) { .footlinks__list { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 440px) { .footlinks__list { grid-template-columns: 1fr; } }

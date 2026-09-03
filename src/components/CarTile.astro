@@ -17,7 +17,7 @@ const { car, name, spec, status, perDay } = Astro.props;
   class:list={['cartile', !car.available && 'cartile--booked']}
   data-category={car.category}
 >
-  <Media src={car.photo} alt={name} />
+  <Media src={car.photo} alt={name} width={640} sizes="(max-width: 760px) 100vw, 33vw" />
   <div class="availability">{car.categoryLabel} · {status}</div>
   <div class="price-l">{car.price.toLocaleString('en-US')}</div>
   <div class="price-unit">{perDay}</div>

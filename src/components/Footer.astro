@@ -1,6 +1,6 @@
 ---
-import { business } from '../data/site';
-import { t, type Locale } from '../i18n';
+import { business, landingIds } from '../data/site';
+import { landingPathFor, t, type Locale } from '../i18n';
 
 interface Props {
   lang: Locale;
@@ -19,5 +19,22 @@ const d = t(lang);
   </div>
   <a class="cta" href={business.lineUrl} rel="noopener">{d.common.bookToday}</a>
 </div>
+
+<!-- The landing routes are not in the header nav, so this is the crawl path
+     that reaches them from every page — and the internal linking that tells
+     Google they belong to the same site rather than sitting orphaned in the
+     sitemap. -->
+<nav class="footlinks" aria-label={d.landingsHeading}>
+  <div class="footlinks__h">{d.landingsHeading}</div>
+  <ul class="footlinks__list">
+    {
+      landingIds.map((id) => (
+        <li>
+          <a href={landingPathFor(id, lang)}>{d.landings[id].navLabel}</a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
 
 <footer class="legal">{d.footer.legalLine}</footer>

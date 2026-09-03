@@ -1,10 +1,16 @@
 ---
+import { Image, getImage } from "astro:assets";
 import Base from "../layouts/Base.astro";
 import Media from "../components/Media.astro";
 import Slideshow from "../components/Slideshow.astro";
 import { cars, featuredCarIds } from "../data/site";
 import { customerPhotos } from "../data/customerPhotos";
 import { pathFor, t, type Locale } from "../i18n";
+import bannerFull from "../assets/img/banner-full.webp";
+import bannerFullEng from "../assets/img/banner-full-eng.webp";
+import bannerSquare from "../assets/img/banner-square.webp";
+import bannerSquareEng from "../assets/img/banner-square-eng.webp";
+import tabian from "../assets/img/tabian.jpg";
 
 interface Props {
   lang: Locale;
@@ -16,17 +22,38 @@ const d = t(lang);
 const priceOf = (id: string) => cars.find((c) => c.id === id)!.price;
 const photoOf = (id: string) => cars.find((c) => c.id === id)!.photo;
 const heroCustomerPhotos = customerPhotos.slice(0, 5);
-const bannerPhoto =
-  lang === "en" ? "/img/banner-full-eng.webp" : "/img/banner-full.webp";
-const bannerPhotoMobile =
-  lang === "en" ? "/img/banner-square-eng.webp" : "/img/banner-square.webp";
+// Resolved through `getImage()` rather than <Image>: the desktop banner is a
+// CSS background (no element to hang a srcset on) and the mobile one is
+// preloaded, which needs one URL the markup is guaranteed to request. Both
+// come back as hashed, resized webp all the same.
+const banner = await getImage({
+  src: lang === "en" ? bannerFullEng : bannerFull,
+  width: 1800,
+  format: "webp",
+  // One file, not a srcset: nothing here can consume extra candidates — the
+  // desktop banner is a CSS background and the mobile one is preloaded by
+  // exact URL — and the global `constrained` layout would emit six unused
+  // derivatives per banner.
+  layout: "none",
+  // The source is already webp; re-encoding at the default quality of 80 came
+  // out *larger* than the original. 70 halves it with no visible difference at
+  // banner size, and this is the LCP image on every home page view.
+  quality: 70,
+});
+const bannerMobile = await getImage({
+  src: lang === "en" ? bannerSquareEng : bannerSquare,
+  width: 800,
+  format: "webp",
+  layout: "none",
+  quality: 70,
+});
 
 // The banner is the LCP element in both layouts, so both sources are
 // preloaded behind the same 700px query the CSS switches on — see
 // `.hero__banner-mobile` in site.css. Keep the two in step.
 const heroPreload = [
-  { href: bannerPhoto, media: "(min-width: 701px)" },
-  { href: bannerPhotoMobile, media: "(max-width: 700px)" },
+  { href: banner.src, media: "(min-width: 701px)" },
+  { href: bannerMobile.src, media: "(max-width: 700px)" },
 ];
 
 const faqSchema = {
@@ -49,7 +76,7 @@ const faqSchema = {
 >
   <section
     class="hero hero--home"
-    style={`--hero-bg: url(${bannerPhoto}); --hero-bg-mobile: url(${bannerPhotoMobile});`}
+    style={`--hero-bg: url(${banner.src}); --hero-bg-mobile: url(${bannerMobile.src});`}
   >
     <div class="kicker">{d.home.kicker}</div>
     <h1 class="display-xl">
@@ -65,7 +92,9 @@ const faqSchema = {
     </div>
     <img
       class="hero__banner-mobile"
-      src={bannerPhotoMobile}
+      src={bannerMobile.src}
+      width={bannerMobile.attributes.width ?? 800}
+      height={bannerMobile.attributes.height ?? 800}
       alt={d.alt.heroBanner}
       loading="eager"
       decoding="async"
@@ -94,7 +123,12 @@ const faqSchema = {
       {
         featuredCarIds.map((id) => (
           <article class="carrow">
-            <Media src={photoOf(id)} alt={d.cars.names[id]} />
+            <Media
+              src={photoOf(id)}
+              alt={d.cars.names[id]}
+              width={420}
+              sizes="(max-width: 520px) 100vw, 210px"
+            />
             <div>
               <div class="price-xl">{priceOf(id).toLocaleString("en-US")}</div>
               <div class="price-unit">{d.common.perDay}</div>
@@ -131,11 +165,15 @@ const faqSchema = {
       <div>
         <h2 class="h4-like">{d.about.registrationHeading}</h2>
         <div class="docphoto">
-          <img
-            src="/img/tabian.jpg"
+          <Image
+            src={tabian}
             alt={d.alt.registration}
+            width={420}
+            sizes="(max-width: 860px) 100vw, 420px"
             loading="lazy"
             decoding="async"
+            format="webp"
+            quality={72}
           />
           <p class="notecaption">{d.about.registrationNote}</p>
         </div>

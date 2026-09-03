@@ -1,4 +1,5 @@
 import type { Dict } from './types';
+import { landingsTh } from './landings-th';
 
 export const th: Dict = {
   htmlLang: 'th',
@@ -91,6 +92,15 @@ export const th: Dict = {
       },
     ],
   },
+
+  floatingCta: {
+    groupLabel: 'ติดต่อด่วน',
+    line: 'แอดไลน์',
+    call: 'โทรเลย',
+  },
+
+  landingsHeading: 'บริการรถเช่าหาดใหญ่ยอดนิยม',
+  landings: landingsTh,
 
   common: {
     perDay: 'บาท/วัน',

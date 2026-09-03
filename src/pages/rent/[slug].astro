@@ -1,0 +1,12 @@
+---
+import Landing from '../../views/Landing.astro';
+import { landingIds, landingSlugs } from '../../data/site';
+
+export function getStaticPaths() {
+  return landingIds.map((id) => ({ params: { slug: landingSlugs[id] }, props: { id } }));
+}
+
+const { id } = Astro.props;
+---
+
+<Landing lang="th" id={id} />

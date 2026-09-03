@@ -2,10 +2,12 @@ User-agent: *
 Allow: /
 
 # The car photos and the customer gallery are the shop's own work and are what
-# Google Images ranks "รถเช่าหาดใหญ่" on — keep the crawlers on them.
+# Google Images ranks "รถเช่าหาดใหญ่" on. Astro emits every one of them as a
+# resized derivative under /_astro/, so that is the directory the image
+# crawler has to be let into — the old /cars/ and /customers/ folders no
+# longer exist.
 User-agent: Googlebot-Image
-Allow: /cars/
-Allow: /customers/
-Allow: /img/
+Allow: /_astro/
+Allow: /og.jpg
 
 Sitemap: https://tawancarrent.com/sitemap-index.xml

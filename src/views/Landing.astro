@@ -1,0 +1,178 @@
+---
+/**
+ * One query-specific landing page, rendered from `d.landings[id]`.
+ *
+ * These exist to answer a single search phrase properly — "รถเช่าสนามบิน
+ * หาดใหญ่", "เช่ารถ 7 ที่นั่ง", "ไม่ใช้บัตรเครดิต" — which the five brochure
+ * pages only touch in passing. Each carries its own H1, body copy and FAQ, so
+ * they are distinct pages to a crawler rather than one template repeated six
+ * times.
+ */
+import Base from '../layouts/Base.astro';
+import CarTile from '../components/CarTile.astro';
+import {
+  business,
+  cars,
+  landingCarIds,
+  placeDetails,
+  type LandingId,
+} from '../data/site';
+import { landingPathFor, pathFor, t, type Locale } from '../i18n';
+
+interface Props {
+  lang: Locale;
+  id: LandingId;
+}
+
+const { lang, id } = Astro.props;
+const d = t(lang);
+const copy = d.landings[id];
+
+const origin = (Astro.site ?? new URL('https://tawancarrent.com')).origin;
+const path = landingPathFor(id, lang);
+
+const shownCars = landingCarIds[id]
+  .map((carId) => cars.find((c) => c.id === carId))
+  .filter((c): c is NonNullable<typeof c> => Boolean(c));
+
+// A Service node rather than another AutoRental: the business entity is
+// already in Base's @graph, and this page describes one offering *of* it. The
+// FAQPage carries this page's own questions, which is what earns the expanded
+// result for the phrase the page targets.
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${origin}${path}#service`,
+      name: copy.heading,
+      description: copy.meta.description,
+      serviceType: copy.navLabel,
+      provider: { '@id': `${origin}/#business` },
+      areaServed: {
+        '@type': 'City',
+        name: lang === 'th' ? 'หาดใหญ่' : 'Hat Yai',
+        ...(placeDetails.latitude !== null && placeDetails.longitude !== null
+          ? {
+              geo: {
+                '@type': 'GeoCoordinates',
+                latitude: placeDetails.latitude,
+                longitude: placeDetails.longitude,
+              },
+            }
+          : {}),
+      },
+      offers: shownCars.map((car) => ({
+        '@type': 'Offer',
+        businessFunction: 'http://purl.org/goodrelations/v1#LeaseOut',
+        priceCurrency: 'THB',
+        price: car.price,
+        priceSpecification: {
+          '@type': 'UnitPriceSpecification',
+          priceCurrency: 'THB',
+          price: car.price,
+          unitCode: 'DAY',
+        },
+        availability: car.available
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/OutOfStock',
+        itemOffered: {
+          '@type': 'Car',
+          name: d.cars.names[car.id],
+          vehicleConfiguration: car.categoryLabel,
+          vehicleTransmission: 'AutomaticTransmission',
+          ...(car.photo ? { image: new URL(car.photo.src, origin).href } : {}),
+        },
+      })),
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${origin}${path}#faq`,
+      mainEntity: copy.faq.map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: { '@type': 'Answer', text: item.a },
+      })),
+    },
+  ],
+};
+---
+
+<Base
+  lang={lang}
+  title={copy.meta.title}
+  description={copy.meta.description}
+  breadcrumbs={[{ label: copy.navLabel, href: path }]}
+>
+  <section class="hero">
+    <div class="kicker">{copy.kicker}</div>
+    <h1 class="display-s">{copy.heading}</h1>
+    <p class="hero__lede">{copy.lede}</p>
+    <div class="btnrow mt-32">
+      <a class="cta cta--line" href={business.lineUrl} rel="noopener">{d.home.ctaLine}</a>
+      <a class="cta cta--ghost" href={business.phoneHref}>
+        {d.common.callPrefix} {business.phone}
+      </a>
+    </div>
+  </section>
+
+  <div class="stats">
+    {
+      d.home.stats.map((s) => (
+        <div>
+          <div class="stat__n">{s.n}</div>
+          <div class="stat__l">{s.label}</div>
+        </div>
+      ))
+    }
+  </div>
+
+  <section class="section">
+    <div class="split split--40">
+      <div class="landing-intro">
+        {copy.intro.map((p) => <p class="prose">{p}</p>)}
+      </div>
+      <ul class="landing-points">
+        {copy.points.map((point) => <li>{point}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--tight section--ruled">
+    <div class="sectionhead">
+      <h2>{copy.carsHeading}</h2>
+      <a class="arrowlink" href={pathFor('cars', lang)}>{d.common.seeAll}</a>
+    </div>
+
+    <div class="inkgrid inkgrid--3">
+      {
+        shownCars.map((car) => (
+          <CarTile
+            car={car}
+            name={d.cars.names[car.id]}
+            spec={d.cars.specs[car.id]}
+            status={d.cars.statuses[car.id]}
+            perDay={d.common.perDay}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section section--tight section--ruled">
+    <h2 class="section-title">{d.faq.heading}</h2>
+
+    <div class="faq">
+      {
+        copy.faq.map((item, i) => (
+          <details class="faq__item" open={i === 0}>
+            <summary class="faq__q">{item.q}</summary>
+            <div class="faq__a">{item.a}</div>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+</Base>

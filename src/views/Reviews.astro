@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import { customerPhotos } from '../data/customerPhotos';
 import { pathFor, t, type Locale } from '../i18n';
@@ -41,13 +42,18 @@ const PAGE_SIZE = 15;
 
     <div class="inkgrid inkgrid--5 gallery" data-gallery data-page-size={PAGE_SIZE}>
       {
-        customerPhotos.map((src, i) => (
+        customerPhotos.map((photo, i) => (
           <div class="media" data-gallery-item hidden={i >= PAGE_SIZE ? true : undefined}>
-            <img
-              src={src}
+            <Image
+              src={photo}
               alt={d.alt.customerPhoto.replace('{n}', String(i + 1))}
+              width={480}
+              height={480}
+              sizes="(max-width: 760px) 33vw, 20vw"
               loading="lazy"
               decoding="async"
+              format="webp"
+              quality={72}
             />
           </div>
         ))
