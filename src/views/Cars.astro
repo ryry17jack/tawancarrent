@@ -32,6 +32,9 @@ const fleetSchema = {
       '@type': 'Vehicle',
       name: d.cars.names[car.id],
       description: d.cars.specs[car.id],
+      // The built derivative's URL, so Google Images has a crawlable file for
+      // each car rather than only the shared OG banner.
+      ...(car.photo ? { image: new URL(car.photo.src, origin).href } : {}),
       vehicleConfiguration: car.categoryLabel,
       vehicleTransmission: 'AutomaticTransmission',
       offers: {

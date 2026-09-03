@@ -16,6 +16,16 @@ export default defineConfig({
     routing: { prefixDefaultLocale: false },
   },
   build: { format: 'directory' },
+  // Every <Image> is emitted as a hashed, compressed derivative under
+  // /_astro/ with a width/height baked in, so images cannot shift the layout
+  // and are served immutable-cached. `constrained` is the right default for a
+  // photo that fills its slot but never upscales past its intrinsic size.
+  image: {
+    layout: 'constrained',
+    responsiveStyles: true,
+    objectFit: 'cover',
+    objectPosition: 'center',
+  },
   compressHTML: true,
   integrations: [
     sitemap({
@@ -32,7 +42,13 @@ export default defineConfig({
         const path = new URL(item.url).pathname;
         item.lastmod = new Date().toISOString();
         item.changefreq = path === '/' || path === '/cars/' ? 'weekly' : 'monthly';
-        item.priority = path === '/' ? 1.0 : path === '/cars/' ? 0.9 : 0.7;
+        // Landing routes sit above the brochure pages (/about/, /contact/) and
+        // below /cars/: they are the pages built to win a specific query.
+        item.priority =
+          path === '/' ? 1.0
+          : path === '/cars/' ? 0.9
+          : /^\/(en\/)?rent\//.test(path) ? 0.8
+          : 0.7;
         return item;
       },
     }),

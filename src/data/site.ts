@@ -1,3 +1,8 @@
+import ativ2021 from '../assets/cars/ativ-2021.jpg';
+import ativ2024 from '../assets/cars/ativ-2024.jpg';
+import veloz2026 from '../assets/cars/veloz-2026.jpg';
+import vios2020 from '../assets/cars/vios-2020.jpg';
+
 /**
  * Locale-neutral facts: contact details, fleet structure, numeric rates.
  * Anything that changes wording between Thai and English lives in
@@ -52,10 +57,10 @@ export const placeDetails: {
   /** Google Business Profile / Maps share link. */
   mapUrl: string | null;
 } = {
-  streetAddress: null,
-  postalCode: null,
-  latitude: null,
-  longitude: null,
+  streetAddress: '65 ถ. กาญจนวนิช ตำบลบ้านพรุ อำเภอหาดใหญ่ สงขลา',
+  postalCode: '90250',
+  latitude: 6.96820192547131,
+  longitude: 100.47673658523811,
   mapUrl: 'https://maps.app.goo.gl/UxzDascrUVEbbsSp9',
 };
 
@@ -87,15 +92,19 @@ export interface Car {
   available: boolean;
   /** Featured cars appear in the four-up grid on the home page. */
   featured: boolean;
-  /** Drop a file in public/cars/ and point at it to replace the placeholder. */
-  photo?: string;
+  /**
+   * Imported from `src/assets/cars/` rather than referenced by URL, so Astro
+   * emits hashed, resized derivatives and the intrinsic size is known at build
+   * time (no layout shift). Drop a file there and import it above.
+   */
+  photo?: ImageMetadata;
 }
 
 export const cars: Car[] = [
-  { id: 'vios-2020', category: 'eco', categoryLabel: 'ECO CAR', price: 800, available: true, featured: true, photo: '/cars/vios-2020.jpg' },
-  { id: 'ativ-2021', category: 'eco', categoryLabel: 'ECO CAR', price: 800, available: true, featured: true, photo: '/cars/ativ-2021.jpg' },
-  { id: 'ativ-2024', category: 'eco', categoryLabel: 'ECO CAR', price: 900, available: true, featured: true, photo: '/cars/ativ-2024.jpg' },
-  { id: 'veloz-2026', category: 'suv', categoryLabel: 'SUV', price: 1500, available: true, featured: true, photo: '/cars/veloz-2026.jpg' },
+  { id: 'vios-2020', category: 'eco', categoryLabel: 'ECO CAR', price: 800, available: true, featured: true, photo: vios2020 },
+  { id: 'ativ-2021', category: 'eco', categoryLabel: 'ECO CAR', price: 800, available: true, featured: true, photo: ativ2021 },
+  { id: 'ativ-2024', category: 'eco', categoryLabel: 'ECO CAR', price: 900, available: true, featured: true, photo: ativ2024 },
+  { id: 'veloz-2026', category: 'suv', categoryLabel: 'SUV', price: 1500, available: true, featured: true, photo: veloz2026 },
 ];
 
 export const carCategoryIds = ['all', 'eco', 'suv'] as const;
@@ -119,3 +128,40 @@ export type ServiceAreaId = (typeof serviceAreaIds)[number];
 
 /** Total cars on the lot; the grid lists the models currently published. */
 export const fleetSize = 4;
+
+/**
+ * Query-specific landing routes. Each one exists because people type that
+ * exact phrase into Google and the five brochure pages answer it only in
+ * passing — `/cars/` is about the fleet, not about "เช่ารถสนามบินหาดใหญ่".
+ * The slugs stay ASCII so the URL survives being pasted into LINE or a
+ * Facebook post without percent-encoding swallowing it.
+ */
+export const landingIds = [
+  'airport',
+  'monthly',
+  'no-credit-card',
+  'seven-seater',
+  'eco-car',
+  'songkhla',
+] as const;
+export type LandingId = (typeof landingIds)[number];
+
+/** Path segment under `/rent/`, keyed by landing id. */
+export const landingSlugs: Record<LandingId, string> = {
+  airport: 'hatyai-airport',
+  monthly: 'monthly',
+  'no-credit-card': 'no-credit-card',
+  'seven-seater': '7-seater',
+  'eco-car': 'eco-car',
+  songkhla: 'songkhla',
+};
+
+/** Which cars each landing page leads with. */
+export const landingCarIds: Record<LandingId, CarId[]> = {
+  airport: ['vios-2020', 'ativ-2024', 'veloz-2026'],
+  monthly: ['vios-2020', 'ativ-2021', 'ativ-2024'],
+  'no-credit-card': ['vios-2020', 'ativ-2021', 'ativ-2024'],
+  'seven-seater': ['veloz-2026', 'ativ-2024', 'vios-2020'],
+  'eco-car': ['vios-2020', 'ativ-2021', 'ativ-2024'],
+  songkhla: ['ativ-2024', 'veloz-2026', 'vios-2020'],
+};

@@ -2,24 +2,54 @@
 /**
  * A photo slot. Renders the real image when `src` is set, otherwise the
  * design's hatched placeholder with its lowercase mono caption — so the layout
- * holds its shape until the shop's photos are dropped into `public/`.
+ * holds its shape until the shop's photos are dropped into `src/assets/`.
+ *
+ * `src` is an imported asset, not a URL string, so <Image> can emit a
+ * width/height and a srcset of hashed derivatives. `sizes` is what decides
+ * which derivative a phone downloads — pass the slot's real CSS width or the
+ * browser assumes 100vw and pulls the largest file.
  */
+import { Image } from 'astro:assets';
+
 interface Props {
-  src?: string;
+  src?: ImageMetadata;
   alt?: string;
   note?: string;
   /** Wider hatch, used for the full-bleed / large panels in the design. */
   big?: boolean;
   class?: string;
+  /** CSS width of the slot across breakpoints; drives srcset selection. */
+  sizes?: string;
+  /** Rendered width in CSS pixels at the widest breakpoint. */
+  width?: number;
+  loading?: 'lazy' | 'eager';
 }
 
-const { src, alt = '', note, big = false, class: className } = Astro.props;
+const {
+  src,
+  alt = '',
+  note,
+  big = false,
+  class: className,
+  sizes = '(max-width: 760px) 100vw, 33vw',
+  width = 640,
+  loading = 'lazy',
+} = Astro.props;
 ---
 
 <div class:list={['media', !src && (big ? 'media--hatch-lg' : 'media--hatch'), className]}>
   {
     src ? (
-      <img src={src} alt={alt} loading="lazy" decoding="async" />
+      <Image
+        src={src}
+        alt={alt}
+        width={width}
+        sizes={sizes}
+        loading={loading}
+        decoding="async"
+        format="webp"
+        quality={72}
+      />
     ) : (
       note && <span class="media__note">{note}</span>
     )

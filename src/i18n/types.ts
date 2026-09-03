@@ -1,4 +1,4 @@
-import type { CarCategoryFilter, CarId, ServiceAreaId } from '../data/site';
+import type { CarCategoryFilter, CarId, LandingId, ServiceAreaId } from '../data/site';
 
 export const locales = ['th', 'en'] as const;
 export type Locale = (typeof locales)[number];
@@ -6,6 +6,27 @@ export type Locale = (typeof locales)[number];
 export interface PageMeta {
   title: string;
   description: string;
+}
+
+/**
+ * One query-specific landing page. `navLabel` is the short form used in the
+ * footer link list and the breadcrumb; `heading` is the H1 and carries the
+ * full search phrase.
+ */
+export interface LandingCopy {
+  meta: PageMeta;
+  navLabel: string;
+  kicker: string;
+  heading: string;
+  lede: string;
+  /** Body copy, one <p> each. */
+  intro: string[];
+  /** The reasons-to-book list. */
+  points: string[];
+  /** Page-specific Q&A, mirrored into FAQPage JSON-LD. */
+  faq: { q: string; a: string }[];
+  /** Heading above the three cars this page leads with. */
+  carsHeading: string;
 }
 
 /**
@@ -55,6 +76,13 @@ export interface Dict {
     lede: string;
     items: { q: string; a: string }[];
   };
+
+  /** The always-visible LINE / call buttons. */
+  floatingCta: { groupLabel: string; line: string; call: string };
+
+  /** Footer heading above the landing-page link list. */
+  landingsHeading: string;
+  landings: Record<LandingId, LandingCopy>;
 
   common: {
     perDay: string;

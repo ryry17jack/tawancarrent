@@ -1,4 +1,5 @@
 import type { Dict } from './types';
+import { landingsEn } from './landings-en';
 
 export const en: Dict = {
   htmlLang: 'en',
@@ -91,6 +92,15 @@ export const en: Dict = {
       },
     ],
   },
+
+  floatingCta: {
+    groupLabel: 'Quick contact',
+    line: 'Add LINE',
+    call: 'Call now',
+  },
+
+  landingsHeading: 'Popular Hat Yai car rental services',
+  landings: landingsEn,
 
   common: {
     perDay: 'THB / day',

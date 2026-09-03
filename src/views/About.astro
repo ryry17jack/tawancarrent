@@ -1,9 +1,11 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Slideshow from '../components/Slideshow.astro';
 import { serviceAreaIds } from '../data/site';
 import { customerPhotos } from '../data/customerPhotos';
 import { pathFor, t, type Locale } from '../i18n';
+import tabian from '../assets/img/tabian.jpg';
 
 interface Props {
   lang: Locale;
@@ -35,7 +37,7 @@ const shopPhotos = [...customerPhotos].sort(() => Math.random() - 0.5).slice(0, 
     <div class="section prose-col">
       {d.about.paragraphs.map((p) => <p class="prose">{p}</p>)}
     </div>
-    <Slideshow photos={shopPhotos} alt={d.about.photoNote} />
+    <Slideshow photos={shopPhotos} alt={d.alt.customerPhoto.replace('{n}', '').trim()} />
   </div>
 
   <div class="numbered">
@@ -74,7 +76,16 @@ const shopPhotos = [...customerPhotos].sort(() => Math.random() - 0.5).slice(0, 
   <section class="section section--tight section--ruled">
     <h2 class="section-title">{d.about.registrationHeading}</h2>
     <div class="docphoto">
-      <img src="/img/tabian.jpg" alt={d.about.registrationHeading} loading="lazy" decoding="async" />
+      <Image
+        src={tabian}
+        alt={d.alt.registration}
+        width={420}
+        sizes="(max-width: 860px) 100vw, 420px"
+        loading="lazy"
+        decoding="async"
+        format="webp"
+        quality={72}
+      />
       <p class="notecaption">{d.about.registrationNote}</p>
     </div>
   </section>

@@ -1,13 +1,17 @@
-import { readdirSync } from 'node:fs';
-import { join } from 'node:path';
+/**
+ * Every photo in `src/assets/customers/`, sorted for a stable build-to-build
+ * order.
+ *
+ * `import.meta.glob` rather than `readdirSync`: the files live in `src/` now so
+ * Astro can resize and hash them, and that only happens for images the module
+ * graph knows about. Eager so the metadata (width/height) is available while
+ * rendering, without an await at every call site.
+ */
+const modules = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/customers/*.{webp,jpg,jpeg,png}',
+  { eager: true },
+);
 
-// `import.meta.url`-relative resolution breaks once Astro bundles this module
-// into dist/.prerender/chunks/, so resolve from the project root instead —
-// astro dev and astro build both run with that as the working directory.
-const dir = join(process.cwd(), 'public', 'customers');
-
-/** Every photo in `public/customers/`, sorted for a stable build-to-build order. */
-export const customerPhotos: string[] = readdirSync(dir)
-  .filter((f) => /\.(webp|jpe?g|png)$/i.test(f))
+export const customerPhotos: ImageMetadata[] = Object.keys(modules)
   .sort()
-  .map((f) => `/customers/${f}`);
+  .map((path) => modules[path]!.default);
